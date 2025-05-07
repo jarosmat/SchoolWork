@@ -481,17 +481,16 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
     - Often hidden in basic system tools or programming runtime libraries
 ### FIle System
 - File system
-- How and where data are stored
-- Formats, protocols
-- Implementation of an abstraction
-for files and directories
-- Responsibility
-- Name translation (directory format)
-- Data blocks management
-- Allocated vs. free blocks
-- Bitmap, linked list, B-tree, …
-- File data management
-- Sequence of data blocks
+  - How and where data are stored
+    - Formats, protocols
+  - Implementation of an abstraction for files and directories
+  - Responsibility
+    - Name translation (directory format)
+    - Data blocks management
+      - Allocated vs. free blocks
+      - Bitmap, linked list, B-tree, …
+    - File data management
+      - Sequence of data blocks
 #### Local File system
 - Stored on HDD, SSD, removable media
 - FAT, NTFS, ext234, XFS, …
@@ -501,70 +500,69 @@ for files and directories
 ### FIles systems examples
 #### FAT 
 - File Allocation Table (FAT)
-- Simple, old, MS-DOS, many variants used today
-- One structure (FAT) for managing free blocks and file data location
-- Directory
-- Sequence of entries with fixed size and attributes
-- Starting cluster, name+ext, size, timestamps, attributes
-- Root in fixed position
+  - Simple, old, MS-DOS, many variants used today
+  - One structure (FAT) for managing free blocks and file data location
+  - Directory
+    - Sequence of entries with fixed size and attributes
+      - Starting cluster, name+ext, size, timestamps, attributes
+    - Root in fixed position
 #### Ext2
 - Second extended file system (ext2)
-- Simple, old, Linux
-- Ext3 – added journal to improve persistence
-- Ext4 – improvement of ext3, larger individual files (16T) and FS (1 EB)
-- Inode (index node)
-- Represents one file/directory
-- Tree-like hierarchy with block references (faster than linked list)
-- Smaller files are represented more efficiently
-- Holds most of the attributes
-- Directory
-- Sequence of entries with fixed structure
-- Inode number, file name
+  - Simple, old, Linux
+    - Ext3 – added journal to improve persistence
+    - Ext4 – improvement of ext3, larger individual files (16T) and FS (1 EB)
+  - Inode (index node)
+    - Represents one file/directory
+    - Tree-like hierarchy with block references (faster than linked list)
+      - Smaller files are represented more efficiently
+    - Holds most of the attributes
+  - Directory
+    - Sequence of entries with fixed structure
+      - Inode number, file name
 ### Hard Disc mechanics
 - Additional terminology
-- Block – the same sector on all platters
-- Cluster – the same track on all platters
-- Flying height – distance between head and platter (~5 nm)
-- Rotational speed – 5400, 7200, 10k, 15k rpm
+  - Block – the same sector on all platters
+  - Cluster – the same track on all platters
+  - Flying height – distance between head and platter (~5 nm)
+  - Rotational speed – 5400, 7200, 10k, 15k rpm
 ### Disk scheduling algorithms
 - What?
-- Scheduling of I/O requests for the disk
-- Originally done by OS, now by disk itself
+  - Scheduling of I/O requests for the disk
+  - Originally done by OS, now by disk itself
 - Why?
-- Disk access time = Seek Time + Rotational Latency + Transfer time
-- Seek Time – time to locate the arm to a track (~ms)
-- Rotational latency – time to rotate a sector to the fixed position of heads
-- Transfer time – time to transfer data
-- Minimize disk access time for multiple I/O requests
+  - Disk access time = Seek Time + Rotational Latency + Transfer time
+    - Seek Time – time to locate the arm to a track (~ms)
+    - Rotational latency – time to rotate a sector to the fixed position of heads
+    - Transfer time – time to transfer data
+  - Minimize disk access time for multiple I/O requests
 - Examples
-- All algorithms demonstrated with the same pattern of I/O requests and initial
-position
-- I/O requests - 82, 170, 43, 61, 24, 16, 190
-- Initial position - 50
+  - All algorithms demonstrated with the same pattern of I/O requests and initial position
+    - I/O requests - 82, 170, 43, 61, 24, 16, 190
+    - Initial position - 50
 ### Disk scheduling algorithms examples
 #### FCFS (First Come First Served)
 - Pros
-- Fair chance for all requests
-- Simple, good for light load
+  - Fair chance for all requests
+  - Simple, good for light load
 - Cons
-- No optimization – usually not the best
+  - No optimization – usually not the best
 #### SSTF (Shortest Seek Time First)
 - Pros
-- Average access time decreases
-- Increased throughput
+  - Average access time decreases
+  - Increased throughput
 - Cons
-- Possible starvation for distant requests, when new short seek requests arrive
+  - Possible starvation for distant requests, when new short seek requests arrive
 #### SCAN (a.k.a. Elevator algorithm)
 - Keeps direction (as long as request exists)
 - Pros
-- High throughput – good for heavy loads
-- Low variance in access time
+  - High throughput – good for heavy loads
+  - Low variance in access time
 - Cons
-- Long waiting times for new requests just visited by the arm
+  - Long waiting times for new requests just visited by the arm
 #### CSCAN
 - Circular SCAN
 - Pros
-- More uniform time compared to SCAN
+  - More uniform time compared to SCAN
 #### LOOK/CLOOK
 - Like SCAN/CSCAN but does not visit ends of the disk
 #### FSCAN
@@ -573,28 +571,25 @@ position
 
 ### Solid State Disk
 - Solid-state disk (SSD)
-- Disk without moving parts (only electric circuits)
-- NAND flash, made of floating gate transistors
-- Similar to RAM, but slower and the transistors retain the charge without refreshing
-- Reads/writes damage the transistors over time (writes and erases far more than reads)
-- 1k-100k program-erase (P/E) cycles (MTBF)
-- Grid structure organized as block of pages
-- Page is ~ 2-16 KiB long, block has ~ 128-256 pages
-- 1-4 bits per cell (SLC, MLC, TLC QLC), more bits = cheaper, but less efficient
-- Read/write per page, erase per block (!)
-- Complex controller that handles the I/O operations
-- And data caching in internal RAM
+  - Disk without moving parts (only electric circuits)
+  - NAND flash, made of floating gate transistors
+    - Similar to RAM, but slower and the transistors retain the charge without refreshing
+    - Reads/writes damage the transistors over time (writes and erases far more than reads)
+      - 1k-100k program-erase (P/E) cycles (MTBF)
+  - Grid structure organized as block of pages
+    - Page is ~ 2-16 KiB long, block has ~ 128-256 pages
+      - 1-4 bits per cell (SLC, MLC, TLC QLC), more bits = cheaper, but less efficient
+    - Read/write per page, erase per block (!)
+  - Complex controller that handles the I/O operations
+    - And data caching in internal RAM
 #### SSD data updates
 - Writing new data is OK
-- Page update cannot erase
-only one page
-- Erase is performed on blocks
-- Update invalidates old page
-and writes a new one
-- Garbage collection preforms
-data consolidation
-- Copy only valid pages of a block
-- Erase entire block
+- Page update cannot erase only one page
+  - Erase is performed on blocks
+- Update invalidates old page and writes a new one
+- Garbage collection preforms data consolidation
+  - Copy only valid pages of a block
+  - Erase entire block
 #### SSD issues
 - Write amplification problem
 - A page is re-written many times due to garbage collection
@@ -658,5 +653,209 @@ data consolidation
 - Indexed by the segment number
 - Segment fault (if translation or validation of access fails)
 
+### Paging
+- Concepts
+- VAS divided into equal parts
+- Page, 2n
+size
+- PAS divided into equal parts
+- Frame, equal size with page (i.e., one page fits exactly one frame)
+- VA 1-dimensional
+- Page table (translation data structure)
+- In memory, for each process
+- Indexed by a page number
+- Each entry contains a frame number and attributes (P)
+- Page fault
+### Page table – 1-level
+
+### Page table – problems
+##### Size
+- 1-level page table, 32-bit VA/PA,
+4k pages/frames (12 bits)
+- Size of the page table entry?
+- Size of the page table?
+- Do we really need the whole VA?
+- Multilevel page tables
+- 1
+st level always in memory
+- Individual tables on other levels may
+be missing (i.e., we are saving space)
+##### Speed
+- Each memory access from an
+instruction means at least one
+other memory access to the page
+table
+- TLB (Translation Lookaside Buffer)
+- Associative memory
+- Cache for translating page number to
+a frame number
+- 0-level page tables (MIPS)
+### Page table – 2-level
+
+### Example/Exercise
+- Having the following code
+executed on IA-32
+- 32bit addresses
+- 2-level paging, 4 KiB pages
+- sizeof(int) == 4
+
+### Questions
+- How many (data) pages are read?
+- What is the minimal amount of
+page faults (optimistic scenario)
+- What is the maximal amount of
+page faults (pessimistic scenario)
+- How many distinct pages may
+cause a page fault in the worst
+case?
+- What if we copy the data?
+- What about the code?
+
+### Page table – real AMD64 example
+
+### Paging – address translation
+#### Steps for address translation
+- Take the page number from VA
+and keep offset (separately)
+- Check TLB for mapping
+- If exists, retrieve the frame number,
+otherwise continue
+- Go through the page table
+- Update A(ccessed) and D(irty) bits
+in page table/TLB
+- Assemble PA by concatenating the
+retrieved frame number and the
+original offset from VA
+#### Go through the page table
+- Divide page number into multiple PT
+indices
+- Index 1st level PT
+- If there is no mapping for 2nd level
+PT, raise page fault exception
+- Retrieve PA for 2nd level PT and
+continue
+- Go through all levels of PTs
+- If there is no mapping in any PT
+level, raise page fault exception
+- If all PT levels are mapped, retrieve
+frame number
+- Save retrieved mapping to TLB
+
+### Paging – page fault exception handling
+- An instruction raises the page fault
+exception
+- OS interrupt handler
+- Determine the cause of the fault
+- Unauthorized access
+- Out of allocated virtual space, store to R/O
+page, access to kernel memory, …
+- Valid address but not mapped
+- Create mapping
+- Find a free frame
+- Load content to the free frame
+- Construct/fill corresponding page tables
+- Return back from handler and retry
+the instruction
+
+- Find a free frame
+- Either there is one unoccupied
+- Or find a victim (for swapping)
+- Page replacement algorithms
+- Save dirty victim frame
+- Remove mapping from TLB
+
+### Page replacement algorithms
+- Cache-replacement algorithms
+- In any situation, when you need to find a victim from a limited space
+- Frames, TLB, cache, …
+#### Optimal page algorithm
+- Replace the page that will not be used for the longest period of time
+- Lowest page-fault rate
+- Theoretical, we do not have an oracle for foretelling the future
+#### Clock
+- Frames organized in a circular manner
+- A clock hand points to the next frame to replace
+- Each page has A(cessed) bit
+- A is the accessed flag which is set to 1 whenever the
+page is touched (by HW)
+- If the frame has A != 0, set A = 0 and
+advance the hand
+- If the frame has A == 0, select this frame
+#### NRU (Not Recently Used)
+- Each page has A(ccessed) and D(irty) bits
+- Clears A bits periodically (e.g., once a minute)
+- Bit D is not touched
+- Uses A and D bits to classify frames into four classes
+- Selects a random frame from the lowest non-empty class
+
+#### LRU (Least Recently Used)
+- Uses the recent past as a prediction of the near future
+- Replaces the page that has not been referenced for the longest time
+- Existing HW implementations
+- Cache
+- Bit matrix
+- SW implementation
+- Move-to-front algorithm
+- Can be implemented by linked list or heap data structure
+- Too complicated and space consuming
+- Approximation algorithms exist
+
+#### NFU (Not Frequently Use)
+- Rough approximation of LRU
+- Each frame has a counter (typically small, several bits)
+- Periodically scan page table and increase the counter for a frames with A==1
+- Always clear A
+- Select the frame with lowest counter
+- Problems
+- Newly occupied frames may be swapped before they get used
+- Frames that were previously heavy used will never be selected
+- Aging
+- Periodically divide counters by 2 (i.e., shift by 1)
+
+
+### Advanced paging
+- Shared memory
+- Part of a virtual memory space shared amongst processes
+- The block is probably placed on different starting virtual address
+- Memory-mapped files
+- File as a backing store for paging
+- Direct access to the file content using CPU instructions
+- Problems with file size and with appending data
+
+## Virtual machine and containers
+- VM = Emulation of a computer system
+- Full virtualization
+- Substitute for a real machine, allows execution of entire OS
+- Hypervisor shares real HW, native execution, virtual HW
+- Isolation, encapsulation, compatibility
+- Process VM
+- Runs as an application inside OS
+- Provides platform-independent programming environment
+- Abstract machine (instructions, memory, registers, …)
+- Java VM, .NET CLR
+- Slow execution
+- JIT, AOT
+- Container = OS-level virtualization
+- OS kernel allows existence of multiple isolated user space instances
+### Physical machine
+- Physical HW
+- CPU, RAM, disks, I/O
+- Underutilized HW
+- SW
+- Single active OS
+- OS controls HW
+### Virtual machine
+- HW-level abstraction
+- Virtual HW: CPU, RAM, disks, I/O
+- Virtualization SW
+- Decouples HW and OS
+- Multiplexes physical HW across
+multiple guest VMs
+- Strong isolation between VMs
+- Manages physical resources,
+improves utilization
+- Encapsulation – VM represented
+as a set of files, can be easily
+distributed
 
 

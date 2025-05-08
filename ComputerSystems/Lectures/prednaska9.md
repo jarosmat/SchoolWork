@@ -480,17 +480,19 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - Requires special handling in path processing (“follow symlinks”)
     - Often hidden in basic system tools or programming runtime libraries
 ### FIle System
+- disk je rozloženej na partitions, každá může mít jiný file system
 - File system
   - How and where data are stored
-    - Formats, protocols
+    - Formats - formát/datová struktura
+    - protocols
   - Implementation of an abstraction for files and directories
   - Responsibility
-    - Name translation (directory format)
-    - Data blocks management
-      - Allocated vs. free blocks
+    - Name translation (directory format) - musí umět převádět různé typy názvu souboru na celé jméno a podom na ID asi
+    - Data blocks management - paměť je rozdělená do bloků, když zapíšeme soubor na disk, ten soubor bude vyhrazenou minimálně jeden blok (blok minimálně 4 kiB)
+      - Allocated vs. free blocks - musí být někde uložené volné bloky
       - Bitmap, linked list, B-tree, …
     - File data management
-      - Sequence of data blocks
+      - Sequence of data blocks - pro každý soubor musí být v nějaké datové struktuře uloženo, v jakých blocích jsou data uložena
 #### Local File system
 - Stored on HDD, SSD, removable media
 - FAT, NTFS, ext234, XFS, …
@@ -501,24 +503,52 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
 #### FAT 
 - File Allocation Table (FAT)
   - Simple, old, MS-DOS, many variants used today
-  - One structure (FAT) for managing free blocks and file data location
-  - Directory
-    - Sequence of entries with fixed size and attributes
-      - Starting cluster, name+ext, size, timestamps, attributes
+  - One structure (FAT) for managing free blocks and file data location - zvládá jak udžování volných bloků, tak i udžování bloků vyhrazaných pro jednotlivé soubory
+  - Boot record - informace o celém file systemu, velikost rootu
+  - 2 FAT - jsou identické, je to nějaké jakoby ochrana proti corruption, první se zapisuje do FAT1 a až tam je vše zapsáno, tak se to zapíše i do FAT2
+    - FAT je datová struktura, která drží metadat file systému - volné bloky, bloky vzhrazané pro soubory
+  - root directory - root má fixní velikost v FAT
+  - DATA - tady jsou samotné bloky, první datový blok má číslo 2 (1 je root)
+  - Directory (ja vypadá záznam souboru v directory) - tohle je v data čáasti (v adresáři, kde soubor bydlí, adresář je taky soubor)
+    - Sequence of entries with fixed size and attributes - každý záznam má fixní velikost
+      - Starting cluster (místo, kde začíná soubor v paměti, name+ext, size, timestamps, attributes
+        - starting cluster určuje, kde je první blok souboru
     - Root in fixed position
+  - Jak vypadá FAT - je to tabulka s číslama, kam se dá indexovat, idnexy začínají od 2 (1 je root)
+    - index je číslo bloku, pokud je na indexu daného bloku 0, jedná se o volný blok
+      - pokud je na indexu jiné číslo než nula, je tam číslo bloku, které následuje pro daný soubor
+        - v záznamu souboru je první blok, pokud číslem prvního bloku souboru zaindexuju do FAT, tak dostanu číslo dalšího bloku a tímto číslem budu opět indexovat do FAT, tohle provádím, dokud nenarazím na $-1$, která určuje, že daný blok (ten co má na svém indexu $-1$) je poslední blok
+  - FAT je na dnešní PC tak malý, že daná struktura je celá v paměti
 #### Ext2
 - Second extended file system (ext2)
   - Simple, old, Linux
     - Ext3 – added journal to improve persistence
     - Ext4 – improvement of ext3, larger individual files (16T) and FS (1 EB)
-  - Inode (index node)
+  - File system je na nějakém partitionu a je tvořen těmito částmi
+    - boot record - informace o file systému - velikost atd
+    - N skupin bloků, skupiny bloků asi nesdílý čísla data bloků (každá skupina má svoje číslování, není to ověřená informace) jedna skupina bloků se dělí následovně:
+      - Superblock
+      - Descriptor
+      - Data bitmap
+      - Inode Bitmap - tady je bitmapa, která má záznami o tom jaké inody jsou alokované a jaké nejsou
+      - Inode table - obsahuje jednotlivé inody
+      - Data blocks
+  - Inode (index node) - způsob záznamu jednoho souboru v daném adresáři (soubor může být jak adresář tak soubor)
     - Represents one file/directory
     - Tree-like hierarchy with block references (faster than linked list)
       - Smaller files are represented more efficiently
     - Holds most of the attributes
+    - skládá se z následujících částí
+      - Info - informace o souboru - asi přístupová práva a něco dalšího (asi i informace o tom jaké data bloky jsou doopravdy používané), taky timestampy vytvořeí a poslední úpravy
+      - $11$ Direct pointerů - přímé pointery na data bloky, ze kterých se skládá soubor
+      - $1$ Indirect pointer - ten ukazuje na data blok ve kterém jsou pouze pointery na opravdové data bloky
+      - $1$ Double indirect pointer - jako indirect pointer akorát je přidaná jedna vrstva - pointer ukazuje na blok, který obshuje pointery na bloky, které obsahují pointery na opravdové data bloky
+      - $1$ Triple indirect pointer - double indirect pointer, akorát má o vrstvu navíc
+        - Indirect, Double Indirect a Trible Indirect pointery jsou vlastně úplné stromy (každý z těchto pointerů ukazuje na vrchol stromu), kde v listech jsou opravdové data bloky a vždy přibyde jedna vrstva stromu
+          - strom se větví tolik, kolik se do jednoho bloky vejde pointerů
   - Directory
     - Sequence of entries with fixed structure
-      - Inode number, file name
+      - Inode number, file name - directory je jenom seznam záznamu, kde jsou názvy souborů a čísla inode
 ### Hard Disc mechanics
 - Additional terminology
   - Block – the same sector on all platters
@@ -541,6 +571,7 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
     - Initial position - 50
 ### Disk scheduling algorithms examples
 #### FCFS (First Come First Served)
+- may be used under smalll loads
 - Pros
   - Fair chance for all requests
   - Simple, good for light load
@@ -551,9 +582,9 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - Average access time decreases
   - Increased throughput
 - Cons
-  - Possible starvation for distant requests, when new short seek requests arrive
+  - Possible starvation for distant requests, when new short seek requests arrive - pokud pořád přichází požadavky, které jsou velmi blízko, tak ty co jsou daleko budou čekat dlouho
 #### SCAN (a.k.a. Elevator algorithm)
-- Keeps direction (as long as request exists)
+- Keeps direction (as long as request exists) - jede v jednom směru a dokud jsou v tom směru požadavky, tak se bude tím směrem pohybovat, když v tom směru nic nového není, tak se začne pohybovat druhým směrem a sbírá požadavky v tomto směru
 - Pros
   - High throughput – good for heavy loads
   - Low variance in access time
@@ -561,6 +592,8 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - Long waiting times for new requests just visited by the arm
 #### CSCAN
 - Circular SCAN
+- jako SCAN, akorát sbírá pouze požadavky v jednom směru pohybu, když se dostane na konec, tak se vrátí na začátek (při návratu nesbírá požadavky) a začne sbírat požadavky ve stejném směru jako předtím
+  - jednodušší jak SCAN, jelikož si nemusí pomatovat směr
 - Pros
   - More uniform time compared to SCAN
 #### LOOK/CLOOK

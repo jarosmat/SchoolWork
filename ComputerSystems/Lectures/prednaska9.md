@@ -636,83 +636,105 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
 - TRIM operation – special command how OS can render blocks invalid (file is deleted)
 ### File system(s) on HDD(s)
 - HDD Partitioning
-- Division of physical drive into multiple logical drives (MBR, GPT)
-- Each may have its own file system
-- Mounted to paths in the root tree (Linux), or presented separately (Windows)
+  - Division of physical drive into multiple logical drives (MBR, GPT)
+    - Each may have its own file system
+  - Mounted to paths in the root tree (Linux), or presented separately (Windows)
 - Redundant Array of Inexpensive Disks (RAID)
-- A way to interconnect multiple HDDs into one
-- Typically at the hardware level, but OS can implement it as well
-- The main objective is to increase reliability (and possibly R/W speed)
-- RAID 0 – two disks, per-sector interleaving (better speed, worst reliability)
-- RAID 1 – two disks completely mirrored
-- RAID 5 – each data block is divided among N disks + 1 checksum is created
+  - A way to interconnect multiple HDDs into one - většinou se vyžaduje, aby disky byly stejně velké a měly stejné vlastnosti
+    - Typically at the hardware level, but OS can implement it as well
+  - The main objective is to increase reliability (and possibly R/W speed)
+    - RAID 0 – two disks, per-sector interleaving (better speed, worst reliability)
+    - RAID 1 – two disks completely mirrored
+    - RAID 5 – each data block is divided among N disks + 1 checksum is created - kapacita je o jeden disk menší než kolik je tam fyzických disků, disk navíc se stará o získání dat při selhání disku navíc
 ### Virtual Memory
 - Basic concepts
-- All memory accesses from instructions work with a virtual address
-- Virtual address space
-- Even instruction fetch
-- Operating memory provides physical memory
-- Physical address space
-- Always 1-dimensional
-- The memory controller uses physical addresses
-- Translation mechanism
-- Implemented in HW (MMU embedded in CPU)
-- Translates a virtual address to a physical address
-- The translation (mapping) may not exist -> exception (fault)
-- Two basic mechanisms – segmentation, paging
+  - All memory accesses from instructions work with a virtual address - všechny load story a všechen přístup do paměti je přes virtuální adresy
+    - Virtual address space - virtuální adresový prostor - je vymyšlený
+    - Even instruction fetch - i fetch instrukcí je na virtuálních adresách
+  - Operating memory provides physical memory
+    - Physical address space
+    - Always 1-dimensional
+    - The memory controller uses physical addresses
+  - Translation mechanism
+    - Implemented in HW (MMU (Memory managment unit) embedded in CPU)
+    - Translates a virtual address to a physical address
+    - The translation (mapping) may not exist -> exception (fault)
+      - překlad nemusí existovat, pokud MMU při překldu zjistí, že překlad neexistuje, MMU vyvolá výjímku
+    - Two basic mechanisms – segmentation, paging
+      - dneska využívaný hlavně paging, segmentation vlastně nevyužívaný
+- VAS - virtual adress space
+- PAS - physical adress space
 #### Why Virtual Memory
 - More address space
-- VAS can be larger than PAS (an illusion of having large memory)
-- Today, IA-32 can have larger PAS than VAS
-- Add secondary storage as a memory backup/swap
-- This is no longer the primary reason today
-- Security
-- Process address space separation
-- “Separation” of logical segments in a process address space (read-only, executable, …)
+  - VAS can be larger than PAS (an illusion of having large memory)
+    - Today, IA-32 can have larger PAS than VAS
+  - Add secondary storage as a memory backup/swap
+  - This is no longer the primary reason today
+  - dřív něco z VAS nebylo namapováno do PAS a pokud se to zjistilo při překladu, tak exception musí získat data z paměti, která byla schovaná někde na disku
+- Security - důvod proč se to dělá dnes
+  - Process address space separation - rozdělení adresových prostorů, aby škodlivý proces nemohl šahat do adresového prostoru jiných procesů
+  - “Separation” of logical segments in a process address space (read-only, executable, …) - adresový prostor je rozdělen do segmentů (stalo se při překladu)
+    - segmenty jsou uloženy ve fyzické paměti za sebou (proto se nepoužívá), fyzický prostor se chová jako heap, mohou se používat stejné algoritmy jako algoritmy na alokaci na heap
+      - je tam opět fragmentace
 - Specialized (advanced) operations
-- Memory-mapped I/O (e.g., memory-mapped file)
-- Controlled memory sharing
+  - Memory-mapped I/O (e.g., memory-mapped file)
+  - Controlled memory sharing
 ### Segmentation
 - Concepts
-- Virtual (process) address space divided into logical segments
-- Segments are numbered
-- may have different sizes
-- Virtual address has two parts
-- [segment number; segment offset]
-- Offsets 0-based for each segment
-- Segment table (translation data structure)
-- In memory, for each process
-- Stores base physical address, length, and attributes for each segment
-- Indexed by the segment number
-- Segment fault (if translation or validation of access fails)
-
+  - Virtual (process) address space divided into logical segments
+    - Segments are numbered - číslování je lokální pro každý proces
+    - may have different sizes - podle toho co vypadne z linkeru
+  - Virtual address has two parts
+    - [segment number; segment offset] - lokální číslo segmentu
+    - Offsets 0-based for each segment - offset uvnitř segmentu (každý segment má vlastní číslování adres (nazývá se offset))
+      - o to se v x86 (CPU, které používaly segmentaci) staraly zvlášní registry - staraly se o čísla segmentů, programátor pracoval pouze s offsety
+  - Segment table (translation data structure)
+    - In memory, for each process
+      - segmentační tabulka je na nějaké fyzické adrese, tato adresa je v nějakém registru
+        - segmentační tabulka nemůže být na virtuální adrese, protože aby se mohla využít pro překlad musí se vědět, kde je
+      - na zaplnění tabulky je zodpovědný OS (asi při přidělování paměti pro procesy)
+        - OS tam přistupuje přes virtuální adresy, základní nastavení tabulky připravuje např UEFI
+    - Stores base physical address, length, and attributes for each segment
+      - je tam například, jestli je záznam platný
+    - Indexed by the segment number
+      - Segmentační tabulka je jednoduché pole
+      - MMU dostal ardresu složenou z segmentu a adresy
+        - zaindexuje číslem segmentu do segmentační tabulky, získá velikost segmentu, zkontroluje, jestli offset není mimo segment (kdyžtak hodí exception)
+        - sečte adresu segmentu získanou z segmentační tabulky s offsetem a získá data
+    - Segment fault (if translation or validation of access fails)
+    - lze odstranit segment z paměti a dát ho do paměti, pokud by změněnej musí být zapsán na disk celý
+      - do segmentační tabulky musí být napsáno, že daný segment je v paměti
 ### Paging
 - Concepts
-- VAS divided into equal parts
-- Page, 2n
-size
-- PAS divided into equal parts
-- Frame, equal size with page (i.e., one page fits exactly one frame)
-- VA 1-dimensional
-- Page table (translation data structure)
-- In memory, for each process
-- Indexed by a page number
-- Each entry contains a frame number and attributes (P)
-- Page fault
+  - VAS divided into equal parts
+    - Page (název částí), $2^n$  size
+  - PAS divided into equal parts
+    - Frame (název částí), equal size with page (i.e., one page fits exactly one frame)
+  - VA 1-dimensional
+  - VAS je pole stránek (page) (stránky jsou očíslované), PAS je pole framů
+  - Page table (translation data structure) - opět připravuje OS a využívá Hardware pro překlad, je uložená někde na fyzické adrese
+    - page table je unique pro každý proces
+    - In memory, for each process
+    - Indexed by a page number
+    - Each entry contains a frame number and attributes (P)
+    - Page fault
+    - page table má stejný počet záznamů jako je počet stránek
+  - virtuální adresa je jednorozměrná (pro programy)
+    - MMU vezme viruální adresu a nižších $n$ bitů v adrese je offset v Pagy a zbytek je číslo page
+    - přeloží se adresa page a nakonec této adresy se přilepí offset (nic se nesčítá při celém překladu)
+    - přeložená adresa může mít jiný rozměr (v bitech ) než virtuální adresa, ale jelikož page i stránky jsou stejně velké a je jich stejný počet, je mapování $1:1$
+    - opět se může stát, že neexistuje mapování pro danou stránku - exception
 ### Page table – 1-level
 
 ### Page table – problems
 ##### Size
-- 1-level page table, 32-bit VA/PA,
-4k pages/frames (12 bits)
-- Size of the page table entry?
-- Size of the page table?
+- 1-level page table, 32-bit VA/PA, 4k pages/frames (12 bits) - může existovat $2^{20}$ str8nek
+  - Size of the page table entry?
+  - Size of the page table?
 - Do we really need the whole VA?
 - Multilevel page tables
-- 1
-st level always in memory
-- Individual tables on other levels may
-be missing (i.e., we are saving space)
+  - 1st level always in memory
+  - Individual tables on other levels may be missing (i.e., we are saving space)
 ##### Speed
 - Each memory access from an
 instruction means at least one
@@ -724,7 +746,10 @@ table
 a frame number
 - 0-level page tables (MIPS)
 ### Page table – 2-level
-
+- VA je rozdělené na $20$ a $12$ bitů jak má být
+- $20$ bitů je rozděleno na $10$ a $10$ bitů
+- PTAR je registr s fyzickou adresou stránkovací tabulky první úrovně (PT1 - 1024 záznamů)
+- v PT1 dostaneme fyzickou adresu stránkovací tabulky druhé úrovně, kde dostane opravdovou fyzickou adresu
 ### Example/Exercise
 - Having the following code
 executed on IA-32
@@ -748,17 +773,12 @@ case?
 
 ### Paging – address translation
 #### Steps for address translation
-- Take the page number from VA
-and keep offset (separately)
+- Take the page number from VA and keep offset (separately)
 - Check TLB for mapping
-- If exists, retrieve the frame number,
-otherwise continue
+- If exists, retrieve the frame number, otherwise continue
 - Go through the page table
-- Update A(ccessed) and D(irty) bits
-in page table/TLB
-- Assemble PA by concatenating the
-retrieved frame number and the
-original offset from VA
+- Update A(ccessed) and D(irty) bits in page table/TLB
+- Assemble PA by concatenating the retrieved frame number and the original offset from VA
 #### Go through the page table
 - Divide page number into multiple PT
 indices

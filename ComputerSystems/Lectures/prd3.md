@@ -1,4 +1,4 @@
-# CPU
+3# CPU
 
 ## Semantic gap
 - assembly je jazyk na 0 a 1
@@ -13,14 +13,20 @@
 - program a data v jedné paměti
 
 
-## real PC architecture
+![Von Neumann](./pictures/won_neumann.png)
+
+## Real PC architecture
 - Sandy bridge
+
+![Sandy Bridge](pictures/sandy_bridge.png)
+
 - CPU složen z více věcí
-  - memmory controlerr (má více kanálů, kterými lze přistupovat k pameti, každý channel k jednomu sticku), komunikuje po vlstní sběrnici
+  - memory controller (má více kanálů, kterými lze přistupovat k pameti, každý channel k jednomu sticku), komunikuje po vlastní sběrnici
   - cache
   - GFX (grafika)
-  - System agent připojen s South Bridge kam jsou připojeny I/O zařízení
-  - 
+  - System agent připojen s South Bridge kam jsou připojeny I/O zařízeníw
+
+
 
 # CPU Architecture
 - Instruction set Architecture
@@ -33,10 +39,13 @@
 - obsahuje registry, paměťové řadiče, můžou tam být paměťové datové struktury (registr kam dám odkaz do paměti, kde to je)
 
 # CPU Commands
+- každá instrukce CPU má binární kódování, s tím pracuje CPU, existuje Assembly - human-readable verze, binární kódy 
+jsou nahrazeny slovy nebo zkratkami - assembler to přeloží do binárního kódování
 - každá instrukce má opcode, pak můžou být operandy
 - CPU může mýt více druhů kódování instrukce
 - jsou procesory, kde je pevná délka instrukce, v jiných může být proměnlivá dékla instrukce a procesor podle opcode nebo a procesor se musí více rozhodovat, jak má co interpretovat
 - pevné kódování (jmenuje se tak) - každá instrukce má pevnou délku (i s operandy)
+
 
 ## Operandy instrukcí
 - záleží na ISA, maximálně 1,2 nebo 3 (něktré operandy mohou být implicitní - např operace bude implicitně pracovat s hodnotou v určitém registru)
@@ -45,15 +54,21 @@
 
 # Instrukční cyklus
 - cyklus, který CPU neustále provádí dokola, některé části lze vynechat
--probíhá následovně
-  - načíst instrukci (opcode) z adresy uložené v IP (PC) registru
-  - u pevného kódování ví kolik bytů přesně přečíst, u nepevného kódování to čte tak, že po každém bytu se rozhoduje jestli číst víc nebo ne
-  - dekódovat instrukci, zjistit, co se má provést
-  - načíst operandy (pokud je co načíst), do meziregistrů
-  - provést instrukci (pouze NOP (no operation) nic nedělá)
-  - uložit výsledek (pokud je co uložit)
-  - increment IP, u pevného kódování se posune o délku instrukce, u nepevného kódování si to musí CPU pomatovat
+  - obecně lze rozdělit do tří částí:
+    - fetch
+    - decode
+    - execute
+- probíhá následovně:
+1. načíst instrukci (opcode) z adresy uložené v IP (PC) registru 
+   - pevného kódování ví kolik bytů přesně přečíst, u nepevného kódování to čte tak, že po každém bytu se rozhoduje 
+   jestli číst víc nebo ne
+2. dekódovat instrukci, zjistit, co se má provést
+3. načíst operandy (pokud je co načíst), do meziregistrů
+4. provést instrukci (pouze NOP (no operation) nic nedělá)
+5. uložit výsledek (pokud je co uložit)
+6. increment IP, u pevného kódování se posune o délku instrukce, u nepevného kódování si to musí CPU pomatovat
 - celá iterace se vždy musí provést celá (to se označuje, že je atomický cyklus), pokud se dělá něco mimo instrukce tak se to provádí mezi iteracema
+- některé části se mohou skipnout pro některé instrukce
 
 ## add instruction execution example
 - GAA, GAB jsou meziregistry, jsou to registry, které se používají při sčítání
@@ -61,10 +76,12 @@
 # Třídy instrukcí
 ## Load instrukce
 - načítání dat z paměti do registrů
-- některé procesory mají load instrukce úplně oddělené od ostatních
+- některé procesory mají load instrukce úplně oddělené od ostatních (předpokládám, že to znamená, že v jiných něž load 
+instrukcích se nemohou objevit jako operandy adresy v paměti)
 - dneska je veliký rozdíl mezi rychlostmi pamětí a CPU, CPU jsou mnohem rychlejší, což je dneska nějak řešené
 - např x86 (stará a si celkem na hovno) nemá load operace, ale každá operace může pracovat s pamětí
-- load-execute architektury, těchto architekturách jsou operace pouze s registry, pro operace můsí být napřed načtené hodnoty do registrů, určitými instrukcemi
+- load-execute architektury, těchto architekturách jsou operace pouze s registry, pro operace můsí být napřed načtené 
+hodnoty do registrů, určitými instrukcemi
 ## Store instruction
 - registr/immidiate hodnota do paměti
 ## Move instrukce
@@ -97,14 +114,18 @@ v assebly:
 `store [c], r1`
 # Registry
 mají více typů registrů
-- general(obecné registry, jsou ), integer, floating point
+- general(obecné registry, často používané jako úložiště mezihodnot výpočtů), integer, floating point
 - address registry (sem se dávají pointry)
 - branch registry - slouží pro realizaci skoků
-- flag registry
-- predikátové registry - jednobitové registry, každá instrukce má napsané které číslo, je to staré, používá se pro větvení, každá instrukce je označená hodnotou registru (kde je buď 1 nebo 0) a podle toho se provádí nebo ne, podmíněný skok každou větev otaguje daným číslem podle výsledku podmínky
+- flag registry - jsou tu flagy
+- predikátové registry - jednobitové registry, každá instrukce má napsané které číslo, je to staré (stará praktika), používá se pro 
+větvení, každá instrukce je označená hodnotou registru (kde je buď 1 nebo 0) a podle toho se provádí nebo ne, 
+podmíněný skok každou větev otaguje daným číslem podle výsledku podmínky
 - aplikační registry
 - systémové registry - 
-- vectorové registry - registry mají více hodnot v jednom registru, nějak oddělené (něco jako array), tyhle registry se dají všechny hodnoty sečíst v jedné instrukci hodnoty ze dvou takových to registrů
+- vectorové registry - registry mají více hodnot v jednom registru, nějak oddělené (něco jako array), dva takovéto registry
+lze rychle sčítat v jedné instrukci
+
 ## Pojmenování registrů
 - Direct (EAX, r01)
 - stack - reltivní adresování na vrchol stacku (něco asi staršího)

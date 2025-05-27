@@ -1,6 +1,6 @@
 # MIPS Assembler
 - [ISA](https://www.cs.gordon.edu/courses/cs311/handouts-2015/MIPS%20ISA.pdf)
-- 32 bit registry r0 až r 31
+- 32 bit registry r0 až r31
   - obecné registry - lze zapisovat, skákat
   - r0 neudrží informaci, po čtení vždy vrátí 0, a při zapsání do něj se ta hodnota ztratí
   - r31 je registr pro instrukci jal
@@ -13,6 +13,7 @@
 - říká, jak má být architektura používaná
   - důležité pro vytváření překladačů (např.: který registr použít jako stack registr)
   - je to potřeba aby byly kompatibilní programy s knihovnama, které byly kompilované jinak
+- říká jak pužívat registry, jak implementovat call stack, konvence volání funkcí
 
 ## MIPS ABI
 ### registry
@@ -22,7 +23,10 @@
 - t0 - t9 registry pro proměné
 - v0, v1 registry pro návratové hodnoty, LE, LSB jdou do v1
 - a0 - a3 - těmito rgistry se předávají první 4 parametry funkce (proto je rychlejší používat maximálně 4 parametry)
-- Preserve pokud No volaná funkce může změnit registry, pokud Yes může volaná funkce tyto registry změnit (na konci funkce musí být v registru stejná funkce)
+- Preserve pokud No volaná funkce může změnit registry, pokud Yes může volaná funkce tyto registry změnit, ale na konci 
+funkce musí být v registru stejná hodnota jako před voláním
+
+![MIPS registers](./pictures/MIPS_registers.png)
 
 ### MIPSové instrukce
 #### Aritmetické
@@ -43,7 +47,7 @@
   - sll, slr - logické shiftování (nezachovává znaménko, šoupne tam na začátek nulu) `instrukce cil, zdroj, shamt` (shamt říká o kolik bitů posunout)
   - sra - aritmetické shiftování (zachovává znaménko, dáva smysl jen doprava)
 #### Memory Access
-potřeba doplnit
+potřeba doplnit - není potřeba umět
 - li $rd, imm32
   - intrukce, která dá immidiate hodnotu délky 32 bitů do registru 
   - ve skutečnosti je přepsaná na více jiných instrukcí (takové instrukce nejsou možné, jelikož je pevná délka instrikce 32 bit)
@@ -65,6 +69,14 @@ potřeba doplnit
 - slt/slti
 - slti/sltiu
 - když porovnávám v podmínce, tak udělám jednu z těchto instrukcí a pak výsledek porovnám se zero registem, ne všechny porovnání lze udělat tímhle, lze to udělat přes více instrukcí
+
+# Flags
+- used only by some ISAs
+- zero flag
+- sign flag
+- carry flag
+- overflow flag
+
 # ISA
 - klasifikace
   - CISC - Complex instruction set computer - x86
@@ -73,11 +85,14 @@ potřeba doplnit
 - ortogonalita - v libovolném místě lze využít libovolný registr
   - např akumulátorová architektura nebo architektura s stack pointer registrem nejsou ortogonální
 - Load-Execute-Store - jsou load/store instrukce, všechny ostatní operace jsou s registry (MIPS)
+
+
 # Obsah procesoru
 - memory controller - dnešní CPU mají více controllerů
 - cache hierarchy - několikavrstevná
 - jádra
-  - registry - každé jádro má své registry, ty registry co jsou vidět v ISE, může existovat více fyzických registrů
+  - registry - každé jádro má své registry, ty registry co jsou vidět v ISE
+  - může existovat více fyzických jader
   - logické procesory - na jednom jádře běží více stringů instrukcí (dneska běžně $2$), každé logické jádro má svoje registry, ale sdílejí výpočetní jednotku
     - Intel to nazývá Hyper threading
     - vlákna poskytují až 50% nárůst výkonu
@@ -91,36 +106,61 @@ potřeba doplnit
     - L1I 
     - L1D
   - L2 128 - 256 kB, přístup desítky taktů, každé jádro svoje  
-  - L3 - sdílené mezi všemi jádry - 
+  - L3 - sdílené mezi všemi jádry - každé jádro má svůj slice
+
+![Simplified CPU scheme](./pictures/simplified_CPU_schema.png)
 
 ## REAL CPU
 - intel Coffe Lake
-- vlevo integrovaná grafika
+- vlevo integrovaná grafika - je připojená na ringu s jádry
 - RING je interní sběrnice pro komunikace jádry s pamětí, tato zběrnice lze uděat jinak (MESH)
 - L3 slice - každé jádro má svůj prostor (část) v L3 a pokud chce jádro něco mimo svůj slice musí požádat jádro kterému to patří, přístup do L3 není vždy stejný
 
+![Real CPU scheme](./pictures/real_CPU_schema.png)
+
 ## REAL CPU schema jádra
-- front end dekoduje instrukce, je pěticestný dekoder - dekoduje pět instrukcí najednou, každá část dekoderu může být jiná
-- instrukce jsou předělané na mikroinstrukce
-- Execution engine - zpracovává mikrointrukce, každou mikrointrukci
+- front end dekoduje instrukce, je pěticestný dekoder - dekoduje pět instrukcí najednou, každá část dekoderu může být jiná (to platí pro architekturu na obrázku)
+  - je to celkem složité u x86 - jsou rozdílné délky instrukcí
+- instrukce jsou v předělané na mikroinstrukce
+- Rename/Alocate/Retirment jednotka - tahle jednotka je zodpovědná za to, aby vše bylo jak má být
+  - např renamuje registry v ISA na actual registry v CPU (to tam je, basically něco jak virtual memory, akorát fyzických egistrů je víc než registrů v ISA)
+  - renaming je dobrý třeba když je za sebou více instrukcí, které na sobě nazávisí, ale potřebují podle ISA použít stejný registr
+například na výsledek násobení, potom když je více takových registrů, tak se ty více nezávislých intrukcí může vykonávat najednou
+- mikroinstrukce propadnou nějakými obvody až do instruction poolu - scheduler
+  - ve scheduleru jsou mikroinstrukce připravené na to aby byly executed
+- Execution engine - zpracovává mikrointrukce
+  - jedno jádro má více execution enginů, každý je zodpovědný za vykonávání trochu jiných instrukcí
+- ze scheduleru jdou mikroinstrukce přes několik portů k přislušným execution enginům - na obrázku, co je za portem jsou dostupné execution enginy za daným portem
+- celé tohle zaručuje, že lze interně vykonávat instrukce v jiném pořadí než v pořadí ja jsou v paměti - instrukce, které nejsou 
+závislé na výsledcích předchozích instrukcí lze vykonávat out of order, ale zvenku pořád to musí vypadat tak, že intrukce jsou 
+vykonávané sekvenčně
+- část s execution enginama je spojená s memory subsystémem 
+
+
+![CPU Core Scheme](./pictures/skylake_block_diagram.png)
 
 ## CPU architecture - Pipeline
 - instrukce se rozdělí na stage
-  - dneska 14 až 19 staagí
+  - dneska 14 až 19 stagí
 - IF - instruction fetch
 - ID - instrukction decode
 - EX - execute
-- MEM 
-- W|B - write back
+- MEM - přístup do paměti, pokud to instrukce potřebuje - např LOAD, STORE instrukce
+- W|B - write back - data načtená z paměti nebo vypočítaná data jsou načtena do cílového registru
 - vždy je více intrukcí vykonáváno najednou u každé intrukce se vykonává jiná stage a instrukcí se vykonává tolik co je stagí
 - past je u podmíněných skoků - CPU si to uvědomí až třeba ve třetí stagy (na obrázku), takže začala načítat sekvenčně špatné instrukce, takže vše špatné (všechny stage za touto instrukcí)se musí zahodit a začít znova načítat instrukce - chvíli se nebude počítat
   - dnešní nové CPU mají branch predictor (odhadne jak se bude skákat a podle toho bude načítat instrukce) má asi 95% účinnost
 - pipeline je schovaná v dekoderu
 - superscalar pŕocessor - více pipeline najednou, u pěticestného dekoderu je 5 pipeline
 
+![Simplified pipeline](./pictures/pipeline_example.png)
+
 ## CPU architecture - out of order execution
 - reservation station (pool) - sem padají mikroinstrukce z dekoderu
-- různé mikroinstrukce jdou přes různé porty - může se instrukce vykonávat v různém pořadí než přišly(každá instrukce ví do kterého portu může)
+- různé mikroinstrukce jdou přes různé porty - může se instrukce vykonávat v různém pořadí než přišly
+(každá instrukce ví do kterého portu může)
   - o tohle se stará reorder buffer
+- každá instrukce se vykonává podle toho jestli má dostupná data potřebná k exekuci
+- na venek to musí vypadat tak, že se intrukce vykonávají sekvenčně
 
 

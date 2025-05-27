@@ -94,7 +94,7 @@ hodnoty do registrů, určitými instrukcemi
 ## Skoky
 - dělení:
   - uncoditional - jednoduché, jenom se změní hodnota v IP
-  - Conditional - CPU se rozhoduje jestli skočit, pokud podmínka splněna, CPU skočí jinam, podmínky záleží na architektuře (co lze porovnávat)
+  - Conditional - CPU se rozhoduje jestli skočit, pokud podmínka splněna, CPU skočí jinam, podmínky záleží na architektuře (co lze porovnávat záleží na architektuře)
 - jiné dělení, podle toho kde se vezme adresa kam se skáče:
   - direct - v instrukci je přímo adresa jako hodnota 
   - indirect - v instrukci je adresa do paměti, kde je uloženo kam se má skočit
@@ -104,14 +104,15 @@ hodnoty do registrů, určitými instrukcemi
 - return vrací IP do funkce ze které bylo voláno
 ### kód ve vyšším jazyce
 to co tu je není úplně dobré
-` if (a < 3) b = 4; else c = a << 2; `
-v assebly:
-`jge [a], 3` pokud a větší nebo rovno 3 (negace podmínky), není tu uvedeno kam se má skočit
-`store [b], 4`
-`jmp`
-`load r1, [A]`
-`shl r1, 2`
-`store [c], r1`
+` if (a < 3) b = 4; else c = a << 2; `\
+v assebly:\
+`jge [a], 3` pokud `a` větší nebo rovno 3 (negace podmínky) skoč k else části, není tu uvedeno kam se má skočit (přesná adresa)\
+`store [b], 4` uloží 4 do `b`, pokud není podmínka splněna\
+`jmp` skok (nepodmíněný) za else \
+else část:\
+`load r1, [a]` načte `a` do registru `r1`\
+`shl r1, 2` left shift `r1` o 2, v `r1` je hodnota a \
+`store [c], r1` uložit do paměti, kde je `c` o 2 shiftnutou hodnotu `a` (`a` se doopravdy nezměnila)
 # Registry
 mají více typů registrů
 - general(obecné registry, často používané jako úložiště mezihodnot výpočtů), integer, floating point
@@ -131,7 +132,10 @@ lze rychle sčítat v jedné instrukci
 - stack - reltivní adresování na vrchol stacku (něco asi staršího)
 - Aliasing - registr (fyzický) může být rozdělen na více částí a každá část se adresuje jinak
 
-ukázka obrázek:
+ukázka obrázek, je 32-bit x86:
+
+![32-bit x86 registers](./pictures/x86_32bit_registers.png)
+
 EAX např adresuje celý 32 bit registr, AX adresa 16 MSb, AH 8 bitů a AL 8 LSb 
 - registr EAX je akumulátor - akumulátorová architekture
 - EBX - base registr
@@ -146,3 +150,6 @@ u x86_64 stejné akorát doleva přidáno 32 bitů a celých 64 bitů je RAX plu
 # CPU má dva režimy
 - uživatelský (neprivilogovaný) - nelze v tomto režimu provádět úplně vše
 - kernelový (privilegovaný) - v tomto režimu pracuje kernel operačního systému, v tomto režimu jsou dostupné systémové registry a navíc některé systémové registry
+
+
+

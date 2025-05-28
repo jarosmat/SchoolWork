@@ -24,7 +24,8 @@
   - načtou se data z paměti do cache line
     - buď se načte do prázdné cache line
     - nebo se najde nějaká cache line, která se zapíše do paměti a uvolní se tím cache
-    - když se dělá store modifikovaných dat, tak se jiná hodnota napřed zapíše do cache a až ve chvíli, kdy budou tyto data vyhozená z cache se nová data zapíšou do paměti
+    - když se dělá store modifikovaných dat, tak se jiná hodnota napřed zapíše do cache a až ve chvíli, kdy budou tyto
+    data vyhozená z cache se nová data zapíšou do paměti
 - Cache line state
   - MESI protocol - zkratka 4 stavů cache lines 
     - modified
@@ -40,7 +41,7 @@ Cache vždy čte a zapisuje do paměti po 64B, musí to tak stejně často být 
   - CPU se ptá jestli 
   - odpověď je buď ano - rovnou vrátí s odpovědí hodnotu k tomuto klíči
   - nebo ne
-- velmi drahaá
+- velmi drahá
 - plně asociativní nebo n-asociativní
 
 

@@ -64,7 +64,7 @@ jsou nahrazeny slovy nebo zkratkami - assembler to přeloží do binárního kó
    jestli číst víc nebo ne
 2. dekódovat instrukci, zjistit, co se má provést
 3. načíst operandy (pokud je co načíst), do meziregistrů
-4. provést instrukci (pouze NOP (no operation) nic nedělá)
+4. provést instrukci
 5. uložit výsledek (pokud je co uložit)
 6. increment IP, u pevného kódování se posune o délku instrukce, u nepevného kódování si to musí CPU pomatovat
 - celá iterace se vždy musí provést celá (to se označuje, že je atomický cyklus), pokud se dělá něco mimo instrukce tak se to provádí mezi iteracema

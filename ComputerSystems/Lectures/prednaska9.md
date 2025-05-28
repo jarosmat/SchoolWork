@@ -1,26 +1,28 @@
 # Operating Systems
 
 
-### OS Role
+## OS Role
 
 - Abstract machine - odstraňuje informace o hardwaru a zátěž spojenou s komunikaci s harwarem,
-  -   Presented by kernel API - schová se hardware před aplikacema a dá aplikacím jednotný API pro komunikaci s různým hardwarem nezávisle na jeho výrobci a verzi
-    -   System calls
-    -   Wrapped in C libraries
-  -   Hide HW complexity/diversity
--   Resource manager - spravuje hardwarové zdroje
-  -   All HW managed by OS
-  -   Sharing HW among applications
-    -   Allocation (memory)
-    -   Time-sharing (CPU) - přidělování výpočetní prostor pro běžící procesy - procesů může být víc než vláken CPU
-    -   Abstraction (disk, network)
+  - Presented by kernel API - schová se hardware před aplikacema a dá aplikacím jednotný API pro komunikaci s různým
+  hardwarem nezávisle na jeho výrobci a verzi
+    - System calls
+    - Wrapped in C libraries
+  - Hide HW complexity/diversity
+- Resource manager - spravuje hardwarové zdroje
+  - All HW managed by OS
+  - Sharing HW among applications
+    - Allocation (memory)
+    - Time-sharing (CPU) - přidělování výpočetní prostor pro běžící procesy - procesů může být víc než vláken CPU
+    - Abstraction (disk, network)
 
 ### CPU modes
 - User mode
   - Available to all applications
   - Limited (e.g., read-only) or no access to some resources
     - The system registers, instructions - jsou registry a instrukce nedostupné v tomto režimu
-- Kernel (system) mode - v tomto režimu běží jádro OS, je snaha aby jádro OS bylo co nejmenší - když v kernelu nastane chyba, většinou spadne celý počítač, pokud se udělá něco špatného v user modu, kernel jenom zabije daný proces
+- Kernel (system) mode - v tomto režimu běží jádro OS, je snaha aby jádro OS bylo co nejmenší - když v kernelu nastane
+chyba, většinou spadne celý počítač, pokud se udělá něco špatného v user modu, kernel jenom zabije daný proces
   - More privileged (all registers and instructions are available)
   - Used by OS or by only part of OS
   - Full access to all resources
@@ -48,7 +50,8 @@ sysret # return and switch to ring 3
 ## OS Architectures
 ### Architecture - monolithic
 Monolithic systems - vše na stejné vrstvě a všechno může volat všechno
-- jeden entry point a pak je tam switch, který vyhodnotí co se má udělat podle toho jakej syscall se zavolal a spustí se tak nějaké funkce (service proc)
+- jeden entry point a pak je tam switch, který vyhodnotí co se má udělat podle toho jakej syscall se zavolal a spustí 
+se tak nějaké funkce (service proc)
 - Big mess – no structure
 - “Early days”
   - Linux

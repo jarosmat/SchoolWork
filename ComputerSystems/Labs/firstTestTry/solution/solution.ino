@@ -100,7 +100,7 @@ class Display{
 class Timer{
   public:
     unsigned long getTimeSeconds(){
-      return (millis() / secondDivider) + 990;
+      return (millis() / secondDivider);
     }
   private:
     constexpr static int secondDivider = 1000;
@@ -117,9 +117,6 @@ class TimeHandler{
       return result % 10;
     }
     int getStage(int position){
-      if (position == 0 && getDigit(position) != 9){
-        return 0;
-      }
       for (int i = 0; i < position; i++){
         if (getDigit(i) != 9){
           return 0;

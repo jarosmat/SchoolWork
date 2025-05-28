@@ -100,3 +100,60 @@ Začíná se od začátku a hledá se první díra kam se požadovaná velikost 
   - blok o velikosti $256$ se rozdělí na dva buddies o velikosti $128$
 - když uvolníme blok, tak se pokusíme ho sloučit s jeho buddym, pokud je buddy tak volný, slučování se provádí, dokud je to možné
 - vytváří velikou interní fragmentaci - pokud alokujeme 513 B, zaplní se 1024B
+
+# Cache
+## HW or SW
+- ukládání výsledků výpočtů, jejichž výsledky budeme potřebotvat častěji
+- Struktura, která ty data udržuje
+  - musí být struktura, která má rychlý přístup k datům
+  - většinou limitovaná velikost
+## Cache in CPU
+- překrývá dlouhý přístup k paměti
+- když se přistupuje k datům, napřed CPU zjistí jestli data náhodou nejsou v cahce
+- procházejí se levely od L1 k L3
+
+## Cache terminology
+- cache line/entry
+  - caches are usually organized in lines
+    - size usually 64B
+    - aligned
+    - je to vlastně jedna řádka v paměti, naadresuju řádek a pak čtu sekvenčně po sloupcích v jednou řádku
+- cache hit
+  - jestli jsou data v cache (je to když CPU chce vědět jestli je to v cache a ono to tam je)
+  - úspěšnost přibližně $97$%
+- cache miss
+  - data nebyla v cache nalezená
+  - musí se udělat přístup do paměti
+  - načtou se data z paměti do cache line
+    - buď se načte do prázdné cache line
+    - nebo se najde nějaká cache line, která se zapíše do paměti a uvolní se tím cache
+    - když se dělá store modifikovaných dat, tak se jiná hodnota napřed zapíše do cache a až ve chvíli, kdy budou tyto
+    data vyhozená z cache se nová data zapíšou do paměti
+- Cache line state
+  - MESI protocol - zkratka 4 stavů cache lines 
+    - modified
+    - exclusive - 
+    - shared
+    - invalid - volná cache line
+
+Cache vždy čte a zapisuje do paměti po 64B, musí to tak stejně často být zarovnané v paměti
+## Cache implementation
+### Associative memory
+- hodně rychlá
+- je to key value pamět, adresuje se velmi rychle, dotaz je jestli je key v paměti (to se používá adresa 64B bloku v paměti)
+  - CPU se ptá jestli 
+  - odpověď je buď ano - rovnou vrátí s odpovědí hodnotu k tomuto klíči
+  - nebo ne
+- velmi drahá
+- plně asociativní nebo n-asociativní
+
+
+Každý přístup do paměti jde přes cahce
+# Multiprocesory
+- SMP - symetric multiprocessing - více procesorů na stejném system busu (stejném sdíleném), staré, nepoužívá se
+- NUMA - non-uniform memory access - více CPU, každý má vlastní paměťový řadič a procesory jsou spojené velmi rychlou sběrnicí
+  - CPU mají stejný RAM, ale každý přistupuje do jiného rozsahu
+  - pokud CPU potřebuje data v rozsahu jiného CPU musí ho požádat a ten se koukne do cache a potom pošle hodnotu zpět
+    - tento přístup je pomalejší - několikrát pomalejší než přístup přímý
+    - dá se přístup vylepšovat
+

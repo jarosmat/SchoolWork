@@ -130,11 +130,11 @@ Začíná se od začátku a hledá se první díra kam se požadovaná velikost 
     - když se dělá store modifikovaných dat, tak se jiná hodnota napřed zapíše do cache a až ve chvíli, kdy budou tyto
     data vyhozená z cache se nová data zapíšou do paměti
 - Cache line state
-  - MESI protocol - zkratka 4 stavů cache lines 
-    - modified
-    - exclusive - 
-    - shared
-    - invalid - volná cache line
+  - MESI protocol - zkratka 4 stavů cache lines, je to protokol zajišťující cache coherence
+    - modified - hodnota v této cache line je jiná než v paměti
+    - exclusive - hodnota v této cache line je stejná jako v paměti
+    - shared - cache line drží poslední copii dat, která je sdílená mezi pamětí a všemi ostatními cache
+    - invalid - cache line má špatnou informaci a je potřeba získat správnou informaci z paměti nebo jiné cache
 
 Cache vždy čte a zapisuje do paměti po 64B, musí to tak stejně často být zarovnané v paměti
 ## Cache implementation

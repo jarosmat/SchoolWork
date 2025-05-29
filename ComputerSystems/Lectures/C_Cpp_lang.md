@@ -1,4 +1,4 @@
-# Druhá přednáška
+# C/C++
 ## Casts
  - explicitní konverze, bez warningů, říká pro compiler, že je ok změnit typ - vhodné pro
  - změnu z menšího na větší, naopak s ztratí data, někdy možné

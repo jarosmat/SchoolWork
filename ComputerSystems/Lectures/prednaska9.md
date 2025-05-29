@@ -1,10 +1,9 @@
 # Operating Systems
 
-
 ## OS Role
 
 - Abstract machine - odstraňuje informace o hardwaru a zátěž spojenou s komunikaci s harwarem,
-  - Presented by kernel API - schová se hardware před aplikacema a dá aplikacím jednotný API pro komunikaci s různým
+  - Presented by kernel API - schová hardware před aplikacemi a dá aplikacím jednotný API pro komunikaci s různým
   hardwarem nezávisle na jeho výrobci a verzi
     - System calls
     - Wrapped in C libraries
@@ -63,15 +62,17 @@ se tak nějaké funkce (service proc)
 - Originally no extensibility
   - Now able to load modules dynamically (flexible, but even more error-prone)
 ### Architectue - layered
-- volution of monolithic system
+- evolution of monolithic system
   - Organized into hierarchy of layers
   - Layer n+1 uses exclusively services supported by layer n (kernel je layer 0)
   - Easier to extend and evolve
+![Layered Architecture](./pictures/layered_architecture.png)
 
 ### Architecture - microkernel
 - Microkernel architecture
   - Move as much as possible from the kernel space to the user space
-  - Communication between user modules - jádro vlastně jenom zajišťuje komunikaci mezi procesy na uživatelské úrovni, takže na uživatelské úrovni jsou i věci tradičně v jádru - otvírání souborů atd
+  - Communication between user modules - jádro vlastně jenom zajišťuje komunikaci mezi procesy na uživatelské úrovni,
+  takže na uživatelské úrovni jsou i věci tradičně v jádru - otvírání souborů atd
     - Message passing (client/server)
 - Extendable, secure, reliable
 - May be quite slow - při posílání zpráv se dělá hodně přechodů mezi CPU režimy
@@ -84,20 +85,21 @@ interface for custom FS implementations
 
 ### trochu mimo
 - proč se windows chová tak jak se chová je windows subsystem - ten to zkazí
-- jádro WIndowsu je kombinace mikrokernelu a monolitického, je to velmi dobré jádro pdobné UNIXu
+- jádro Windowsu je kombinace mikrokernelu a monolitického, je to velmi dobré jádro pdobné UNIXu
 
 
 ## Devices
 - Terminology
   - Device - “a thing made for a particular purpose”
-  - Device controller (řadič), je to kus hardwaru - má dva úkoly:
-    - Handles connected devices electrically (signals “on wires”, A/D converters) - zajišťuje připojení věcí a komunici s nimi
+  - Device controller (řadič), je to kus hardwaru
+    - Handles connected devices electrically (signals “on wires”, A/D converters) - zajišťuje připojení věcí a komunikaci s nimi
     - Devices connected in a topology
   - Device driver - ovladač
     - SW component (piece of code), part of OS (module, dynamically loaded)
     - Abstract interface to the upper layer in OS
     - Specific for a controller or a class/group of controllers
     - pro různé zařízení jsou různé drivery a poskytuje API pro vyšší vrstvy
+      - byšší vrstvy komunikují s hardwarem přes driver
   - BIOS/UEFI
     - Basic HW interfaces that allow to enumerate and initialize devices on boot
     - onstartup se podívá co kde leží - zařízení a řadiče a načte je do paměti
@@ -114,12 +116,14 @@ interface for custom FS implementations
 
 ### Device communication
 - How CPU performs I/O operations
-  - Specialized instructions - zařízení mají namapované adresy - mají vlastní adresový prostor (nesouvisí s pamětí), mapování zajišťuje BIOS/UEFI, lze posílat a číst pouze byty
+  - Specialized instructions - zařízení mají namapované adresy - mají vlastní adresový prostor (nesouvisí s pamětí), 
+  mapování zajišťuje BIOS/UEFI, lze posílat a číst pouze byty
     - in al, dx
     - out al, dx
   - Memory-mapped devices - jiný způsob než specialized instructions
     - Device operating structures are mapped at fixed addresses (at boot)
-    - Basic memory operations are translated by HW into I/O operations - device operating structures mají adresy v adresovém prostoru paměti
+    - Basic memory operations are translated by HW into I/O operations - device operating structures mají adresy v 
+    adresovém prostoru paměti
       - Reads and writes may trigger some device functions
       - E.g., writing at a specific offset may in fact send a command to the device
 
@@ -137,7 +141,7 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
 10. Return to the application
 
 ### Example PIO disk handling
-- to co tam je napsané, postup zapisování do registrů je co dělá constroller
+- to co tam je napsané, postup zapisování do registrů je co dělá controller
 ### Device intercommunication
 - Polling
   - CPU actively checks device status change (like in previous example), dnes se nepoužívá, CPU se dívá do controleru nebo někam a zjišťuje jestli se dokončila operace
@@ -147,23 +151,30 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - IRQ (interrupt request) handling
   - CPU has at least one pin for requesting an interrupt
   - CPU přeruší daný proces co komunikuje se zařízením a dělá něco jiného
-  - CPU nečeká až bude operace dokončena a až jsou data v controleru, tak hardware upozorní CPU, že jsou připravená, CPu musí samo přenést do paměti
+  - CPU nečeká až bude operace dokončena a až jsou data v controleru, tak hardware upozorní CPU, že jsou připravená, CPU
+  musí samo přenést do paměti
 - DMA (Direct Memory Access) - přešuje se proces
-  - Transfer data to/from a device without CPU attention, zařízení samo přenese data do paměti - má k tomu přístup a potom upozorní CPU že to dokončil
+  - Transfer data to/from a device without CPU attention, zařízení samo přenese data do paměti - má k tomu přístup,
+  a potom upozorní CPU že to dokončil
   - DMA controller - přenese data z hardwaru přímo do paměti
-  - Scatter/gather - data na přenesení do hardwaru můžou být různě po paměti (scatter), DMA controller dostane info, kde je co a on to pozbírá, slepí a pošle to dál
-    - například při posílání dat po TCP/IP, kde každá vrstva má svojí hlavičku, tak jak se to encapsuluje, tak to není na jednou místě, ale je to slepeno až na konci
+  - Scatter/gather - data na přenesení do hardwaru můžou být různě po paměti (scatter), DMA controller dostane info, 
+  kde je co a on to pozbírá, slepí a pošle to dál
+    - například při posílání dat po TCP/IP, kde každá vrstva má svojí hlavičku, tak jak se to encapsuluje, tak to není 
+    na jednou místě, ale je to slepeno až na konci
 
 ### Interrupt types
+- IRQ - interrupt request, signál pro CPU na přerušení výpočtu a přenechání výpočetího prostoru pro interrupt handler
 - External - nějaké zařízení přes IRQ řekne CPU, že potřebuje pracovat s CPU, CPU přeruší vykonávání programu a věnuje se HW i guess
   - HW source using an IRQ (interrupt request pin) pin
-  - Masking (temporary disabling interrupts) - CPU je schopen ignorovat (dočasně zakázat přerušení), například, když se nějak zapisují data, tak tam mohou být pevné timingy a při tom není moc dobré přešuvat CPU
+  - Masking (temporary disabling interrupts) - CPU je schopen ignorovat (dočasně zakázat přerušení), například, 
+  když se nějak zapisují data, tak tam mohou být pevné timingy a při tom není moc dobré přerušovat CPU
     - přerušení může zakázat pouze kernel level
 - (Hardware) Exception - vyvolává to CPU
   - Unexpectedly triggered by an instruction (when an instruction is executed)
   - Trap (trigger exception after) or fault (instruction rollbacks, trigger before) - 
     - trap vykoná se instrukce a pak CPU hodí přerušení
     - fault - CPU zahodí pipelinu a ani se nepokusí vykonat problémovou instrukci a hodí to OS, který se to pokusí vyřešit - může klidně killnout proces
+      - instruction rollback je obnovení stavu CPU před nějakou instrukcí, asi to lze udělat tady, dělá se to u mispredictnutí branchí
   - Predefined set by CPU architecture 
 - Software - může ho vyvolat uživatelskej proces
   - Special instruction (e.g., x86 has int)
@@ -186,9 +197,9 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
     - Fixed (defined by ISA)
     - Interrupt table (array of pointers of handlers for individual interrupts) - pro každé číslo přerušení (nebo odkud přerušení přislo) má tabulku s napevno danými adresami, 
   které určují, kde je v paměti program na řešení přerušení (je tam pole, kam se indexuje číslem přerušení - proto jsou čísla přerušení očíslovaná), tahle tabulka je tvořená jádrem OS
-  - The current stream of instructions is interrupted, CPU begins execution of interrupt handler’s instructions (přeruší se proud instrukcí, které se právě provádějí - dnes se dokončí instrukce a pak se přeruší tenhle proud, uloží si stav CPU)
+  - The current stream of instructions is interrupted, CPU begins execution of interrupt handler’s instructions (přeruší se proud instrukcí, které se právě provádějí - dnes se dokončí instrukce a pak se přeruší tenhle proud, uloží se stav CPU)
     - Usually between instructions (current instruction must be complete or rollback)
-    - A privilege switch usually happens, the interrupt handler is part of a kernel (přepne se do kernel modu)
+    - A privilege switch usually happens, the interrupt handler is part of a kernel (při přerušení výpočtu, aby se pustil interrupt handler se přepne do kernel modu)
     - An essential part of the CPU state (at least IP) must be saved (e.g., to a special register) - stav CPU se někam uloží (například speciální regostr, x86 to pushne na HW stack)
   - The interrupt handler saves the (rest of the) CPU state
   - The Interrupt handler does something useful (its job)
@@ -220,8 +231,9 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
 - Fiber - zodpovídá za ně např uživatelská knihovna
   - Lighter unit of scheduling - lightweight vlákna, je jednodušší (a rychlejší) mezi němi přepínat
   - Cooperative scheduling
-    - Running fiber explicitly yields - pokud fiber 
-  - process může mít několik vláken a ty můžou být rozdělené knihovnou na fibery, které sdílí výpočetní prostředky vláken a střídají se v exekuci - fiber může odmítnout výpočetní čas
+    - Running fiber explicitly yields
+  - process může mít několik vláken a ty můžou být rozdělené knihovnou na fibery, které sdílí výpočetní prostředky 
+  vláken a střídají se v exekuci - fiber může odmítnout výpočetní čas
 
 ### Process vs. Thread
 - Process
@@ -266,7 +278,7 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - Multiple CPUs (cores) in one system
   - More challenging for the scheduler
   - Affinity - process si může určit, na kterých jádrech má běžet, proces má afinitu k určitým jádrům
-- Context - scheduler pracuje s tím, že u vláken jsou kontexty
+- Context - scheduler pracuje s tím, že u vláken jsou kontexty - vlastnš stav CPU při vykonávání vlákna
   - CPU (and possibly other) state of a scheduling unit, v kontextu můžou být tyto informace:
     - Registers (including PC, specialized vector registers), stav registrů
     - Additional units (x87 coprocessor)
@@ -294,7 +306,7 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - Awaits admission
 - Terminated - jednotka je dokončená, čeká na odstranění
   - Until the parent process reads the result
-- Ready - jednotky ve stavu ready jsou ve frontě a čekají na napránování
+- Ready - jednotky ve stavu ready jsou ve frontě a čekají na naplánování
   - Wait for scheduling
 - Running
   - CPU assigned
@@ -305,6 +317,8 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
     - jednotka je blocked, začne čtení dat, data se přečtou, přijde přerušení od disku a jádro OS přesune do stavu ready
   - lze se sem dostat z running
   - tohle stav např i když je v programu sleep funkce
+
+![Units of Scheduling States](./pictures/unit_of_scheduling_graph.png)
 
 ## Multitasking
 - Cooperative
@@ -374,6 +388,11 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - Schedule head unit of scheduling from the highest non-empty queue
   - tohle dobře zvládá interaktivní aplikace - něco dělané např v WinForms - tyhle fungují tak, že se s nimi interaguje a aplikace pak vykoná něco rychlého (na výpočetní čas), ale je potřeba aby jejich odezva byla rychlá - budou v nejvyšších frontách
   - při čtení ze souborů aplikace bublaj nahoru - zavolaj syscall čtení a hned se zablokujou, po ukončení čtení budou počítat - takže budou opět bublat dolů
+  - nové procesy jsou přiřazené do front podle jejich priority
+    - čím větší priorita, tím vyšší fronta
+
+![Multilevel queue](./pictures/multilevel_queue_scheduling.png)
+
 - Completely fair scheduler (CFS) - netriviální, jenom to ukazoval
   - Implemented in Linux kernel
     - Currently the default scheduler
@@ -410,22 +429,27 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
     - Abstract stream of data (bytes)
       - Kernel does not understand file formats
         - systém rozumí pouze adresářům, adresáře josu pouze speciální typ souborů
-    - Typically stored on secondary storage (soubory jsou perzistentní, respektive secondary storage je perzistentní), but there are other possibilities (temporary soubory, které leží v paměti - jsou neskutečně rychlé)
+    - Typically stored on secondary storage (soubory jsou perzistentní, respektive secondary storage je perzistentní),
+    but there are other possibilities (temporary soubory, které leží v paměti - jsou neskutečně rychlé)
 - File identification
   - System uses numeric identifiers
   - File name and path – a named reference to the file identifier in organized tree structure
     - So that humans can find the files
     - Some parts of the file name may have special meaning (leading dot, extension)
 ### File operations
-- `open` na soubor vrátí pouze číslo souboru vygenerované OS (není to opravdové číslo souboru - z bezpečnostních důvodů), číslování souborů pro proces je process unique, proces má tabulku otevřených souborů
-- jsou režimy pro otevírání souborů, soubory jako read může mít otevřeno více procesů, ale pouze jeden proces může mít otevřený soubor pro zápis
+- `open` na soubor vrátí pouze číslo souboru vygenerované OS (není to opravdové číslo souboru - z bezpečnostních důvodů),
+číslování souborů pro proces je process unique, proces má tabulku otevřených souborů
+- jsou režimy pro otevírání souborů, soubory jako read může mít otevřeno více procesů, ale pouze jeden proces může mít
+otevřený soubor pro zápis
   - je více druhů write
     - klasický write zruší všechno co je v souboru a do souboru se zapisuje na začátek a ukazovátko do proudu dat je nastavené do souboru
     - append, připisuje na konec souboru, ukazovátko do proudu dat je na konec souboru
 - `seek` - pocess má ukazovátko do proudu bytů (tak soubory interpretuje OS) a seek změní polohu ukazovátka
-- `close` - je potřeba zavřít soubor - OS dopíše nějaké nazapsané byty, odebere soubor z tabulky otevřených souborů procesu, případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro zápis
+- `close` - je potřeba zavřít soubor - OS dopíše nějaké nazapsané byty, odebere soubor z tabulky otevřených souborů procesu, 
+případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro zápis
 - Additional operations
-  - Create, truncate, (nějaké oříznutí souboru) delete, flush, change attributes (atributy jsou např.: čas vytvoření souboru, poslední otevření souboru, práva, jméno souboru)
+  - Create, truncate, (nějaké oříznutí souboru) delete, flush, change attributes (atributy jsou např.: čas vytvoření 
+  souboru, poslední otevření souboru, práva, jméno souboru)
 - File handle - je to číselné označení souboru, které je proces unique
   - Process-specific sequentially assigned, kernel holds translation table
   - sdtin má handle $0$
@@ -433,12 +457,16 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - stterr má handle $2$
 - Buffering - Buffery jsou v paměti
   - To increase performance, multiple levels (system, language runtime)
-  - načítání dat in advance (sequential acces rychlejší) - někam do paměti se uloží data z disku a pak je rychlejší přístup k těmto datům (dávají se k použití, jak si o ně process actually žádá), runtimy jazyků to dělají automaticky (načítají například 4 kiB), OS často dělá vlastní buffering (třeba 64kiB) a při syscallu od runtimu jazyka mu to servíruje rychleji a nemusí se dělat přerušení
+  - načítání dat in advance (sequential acces rychlejší) - někam do paměti se uloží data z disku a pak je rychlejší 
+  přístup k těmto datům (dávají se k použití, jak si o ně process actually žádá), runtimy jazyků to dělají automaticky
+  (načítají například 4 kiB), OS často dělá vlastní buffering (třeba 64kiB) a při syscallu od runtimu jazyka mu to 
+  servíruje rychleji a nemusí se dělat přerušení
   - Buffering se dělá i při zápisu - při vypnutí napájení nemusí být vše zapsané na disk
   - Sequential vs random access - sekvenční trochu lepší, oboje se dá vylepšit pokud dělá OS read-ahead (buffering)
 - Alternatives
   - Memory mapping (will become more clear after memory management)
-  - Async file I/O - pomocí neblokující funkce, která hned vrátí nějaký identifikátor a je kdyspozici funkce pro kontrolu, jestly bylo čtení dokončeno, nemusí se proces blokovat při čtení a počítat něco jiného
+  - Async file I/O - pomocí neblokující funkce, která hned vrátí nějaký identifikátor a je kdyspozici funkce pro kontrolu, 
+  jestly bylo čtení dokončeno, nemusí se proces blokovat při čtení a počítat něco jiného
 
 ### File attributes
 ### File directory
@@ -477,11 +505,13 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - Most operations are transparent (no special handling required)
   - Saves space (in some situations), creates additional problems
     - E.g., file deletion should not always remove the file data (reference counting)
+  - hard link je odkaz přímo na data na file systému
 - Symlinks (soft links)
   - Special files where text content holds a path to another file
     - Does not refer to file IDs
   - Requires special handling in path processing (“follow symlinks”)
     - Often hidden in basic system tools or programming runtime libraries
+  - soft link je odkaz na jiný záznam ve file systému
 ### FIle System
 - disk je rozloženej na partitions, každá může mít jiný file system
 - File system
@@ -491,7 +521,8 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - Implementation of an abstraction for files and directories
   - Responsibility
     - Name translation (directory format) - musí umět převádět různé typy názvu souboru na celé jméno a podom na ID asi
-    - Data blocks management - paměť je rozdělená do bloků, když zapíšeme soubor na disk, ten soubor bude vyhrazenou minimálně jeden blok (blok minimálně 4 kiB)
+    - Data blocks management - paměť je rozdělená do bloků, když zapíšeme soubor na disk, ten soubor bude mít vyhrazený
+    minimálně jeden blok (blok minimálně 4 kiB)
       - Allocated vs. free blocks - musí být někde uložené volné bloky
       - Bitmap, linked list, B-tree, …
     - File data management
@@ -506,13 +537,15 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
 #### FAT 
 - File Allocation Table (FAT)
   - Simple, old, MS-DOS, many variants used today
-  - One structure (FAT) for managing free blocks and file data location - zvládá jak udžování volných bloků, tak i udžování bloků vyhrazaných pro jednotlivé soubory
+  - One structure (FAT) for managing free blocks and file data location - zvládá jak udžování volných bloků, tak i 
+  udžování bloků vyhrazaných pro jednotlivé soubory
   - Boot record - informace o celém file systemu, velikost rootu
-  - 2 FAT - jsou identické, je to nějaké jakoby ochrana proti corruption, první se zapisuje do FAT1 a až tam je vše zapsáno, tak se to zapíše i do FAT2
-    - FAT je datová struktura, která drží metadat file systému - volné bloky, bloky vzhrazané pro soubory
+  - 2 FAT - jsou identické, je to nějaké jakoby ochrana proti corruption, první se zapisuje do FAT1 a až tam je vše 
+  zapsáno, tak se to zapíše i do FAT2
+    - FAT je datová struktura, která drží metadata file systému - volné bloky, bloky vzhrazané pro soubory
   - root directory - root má fixní velikost v FAT
   - DATA - tady jsou samotné bloky, první datový blok má číslo 2 (1 je root)
-  - Directory (ja vypadá záznam souboru v directory) - tohle je v data čáasti (v adresáři, kde soubor bydlí, adresář je taky soubor)
+  - Directory (jak vypadá záznam souboru v directory) - tohle je v data části (v adresáři, kde soubor bydlí, adresář je taky soubor)
     - Sequence of entries with fixed size and attributes - každý záznam má fixní velikost
       - Starting cluster (místo, kde začíná soubor v paměti, name+ext, size, timestamps, attributes
         - starting cluster určuje, kde je první blok souboru
@@ -520,8 +553,13 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - Jak vypadá FAT - je to tabulka s číslama, kam se dá indexovat, idnexy začínají od 2 (1 je root)
     - index je číslo bloku, pokud je na indexu daného bloku 0, jedná se o volný blok
       - pokud je na indexu jiné číslo než nula, je tam číslo bloku, které následuje pro daný soubor
-        - v záznamu souboru je první blok, pokud číslem prvního bloku souboru zaindexuju do FAT, tak dostanu číslo dalšího bloku a tímto číslem budu opět indexovat do FAT, tohle provádím, dokud nenarazím na $-1$, která určuje, že daný blok (ten co má na svém indexu $-1$) je poslední blok
+        - v záznamu souboru je první blok, pokud číslem prvního bloku souboru zaindexuju do FAT, tak dostanu číslo 
+        dalšího bloku a tímto číslem budu opět indexovat do FAT, tohle provádím, dokud nenarazím na $-1$, která určuje,
+        že daný blok (ten co má na svém indexu $-1$) je poslední blok
   - FAT je na dnešní PC tak malý, že daná struktura je celá v paměti
+
+![FAT](./pictures/FAT.png)
+
 #### Ext2
 - Second extended file system (ext2)
   - Simple, old, Linux
@@ -530,10 +568,10 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - File system je na nějakém partitionu a je tvořen těmito částmi
     - boot record - informace o file systému - velikost atd
     - N skupin bloků, skupiny bloků asi nesdílý čísla data bloků (každá skupina má svoje číslování, není to ověřená informace) jedna skupina bloků se dělí následovně:
-      - Superblock
-      - Descriptor
-      - Data bitmap
-      - Inode Bitmap - tady je bitmapa, která má záznami o tom jaké inody jsou alokované a jaké nejsou
+      - Superblock - udržuje informace o celém filesystému, je stejný v každé block group
+      - Descriptor - popisuje jak vypadá block group
+      - Data bitmap - bitmapa, popisuje, které bloky jsou zabrané
+      - Inode Bitmap - tady je bitmapa, která má záznamy o tom jaké inody jsou alokované a jaké nejsou
       - Inode table - obsahuje jednotlivé inody
       - Data blocks
   - Inode (index node) - způsob záznamu jednoho souboru v daném adresáři (soubor může být jak adresář tak soubor)
@@ -551,7 +589,10 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
           - strom se větví tolik, kolik se do jednoho bloky vejde pointerů
   - Directory
     - Sequence of entries with fixed structure
-      - Inode number, file name - directory je jenom seznam záznamu, kde jsou názvy souborů a čísla inode
+      - Inode number, file name - directory je jenom seznam záznamů, kde jsou názvy souborů a čísla inode
+
+![Ext2](./pictures/ext2.png)
+
 ### Hard Disc mechanics
 - Additional terminology
   - Block – the same sector on all platters
@@ -660,13 +701,20 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
     - The memory controller uses physical addresses
   - Translation mechanism
     - Implemented in HW (MMU (Memory managment unit) embedded in CPU)
+      - MMU překládá viruální adresy na fyzické adresy (překlad dělá hardware))
+        - s fyzickými adresami se pouze komunikuje s pamětí
     - Translates a virtual address to a physical address
     - The translation (mapping) may not exist -> exception (fault)
-      - překlad nemusí existovat, pokud MMU při překldu zjistí, že překlad neexistuje, MMU vyvolá výjímku
+      - překlad nemusí existovat, pokud MMU při překladu zjistí, že překlad neexistuje, MMU vyvolá výjímku
+      - výjimka je řešená buď segfaultem - pokud proces přistupuje někam kam nemá
+      - nebo se může stát, že na tu část, kterou aplikace přisupuje akorát ještě operační systém nevyhradil fyzickou paměť
+        - proces dostal naalokovanou nějakou paměť, ale paměť je vyhrazená ve fyzické paměti on demand
     - Two basic mechanisms – segmentation, paging
       - dneska využívaný hlavně paging, segmentation vlastně nevyužívaný
 - VAS - virtual adress space
 - PAS - physical adress space
+- aplikaci si myslí, že mají celý adresový prostor pro sebe, ale to je akorát schované za virtuální pamětí
+  - adresové prostory všech aplikací jsou oddělené
 #### Why Virtual Memory
 - More address space
   - VAS can be larger than PAS (an illusion of having large memory)
@@ -707,19 +755,24 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
     - Segment fault (if translation or validation of access fails)
     - lze odstranit segment z paměti a dát ho do paměti, pokud by změněnej musí být zapsán na disk celý
       - do segmentační tabulky musí být napsáno, že daný segment je v paměti
+- Segmentace je nevýhodná, protože při každém přístupu do paměti, se musí provést jedno sčítání a jedno porovnání
 ### Paging
 - Concepts
   - VAS divided into equal parts
-    - Page (název částí), $2^n$  size
+    - Page (název částí), $2^n$  size, page musí mít velikost mocniny dvojky
   - PAS divided into equal parts
     - Frame (název částí), equal size with page (i.e., one page fits exactly one frame)
+  - page a framy jsou vždycky stejně velké
   - VA 1-dimensional
   - VAS je pole stránek (page) (stránky jsou očíslované), PAS je pole framů
   - Page table (translation data structure) - opět připravuje OS a využívá Hardware pro překlad, je uložená někde na fyzické adrese
     - page table je unique pro každý proces
     - In memory, for each process
     - Indexed by a page number
+    - každý záznam je stejně velký jako je rozsah adres - na 64 bitovém systému bude záznam velký 64 bitů
     - Each entry contains a frame number and attributes (P)
+      - je tam base adresa, ale jelikož každý frame má $2^N$ bytů, posledních $N$ bitů adresy jsou nuly, je potřeba
+      pouze číslo záznamu, díky tomu může být záznam stejně velký jako fyzická adresa a vejdou se tam i atributy
     - Page fault
     - page table má stejný počet záznamů jako je počet stránek
   - virtuální adresa je jednorozměrná (pro programy)
@@ -727,13 +780,26 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
     - přeloží se adresa page a nakonec této adresy se přilepí offset (nic se nesčítá při celém překladu)
     - přeložená adresa může mít jiný rozměr (v bitech ) než virtuální adresa, ale jelikož page i stránky jsou stejně velké a je jich stejný počet, je mapování $1:1$
     - opět se může stát, že neexistuje mapování pro danou stránku - exception
-### Page table – 1-level
+- Překlad
+  - z pohledu programátora je adresový prostor jednorozměrný, ale jelikož framy i page jsou stejně velké a velikost je 
+  mocnina dvou, ve virtuální adrese je N spodních bitů offset
+  - N spodních bitů se odebere z adresy a vinulují se, zbytkem adresy, se indexuje do page tablu, čímž se získá fyzická
+  adresa, ve které spodních N bitů je nahrazeno N spodními bity z virtální adresy
+  - neprovádí se matematické operace, je to rychlejší než segmentation, je pouze jeden přístup do paměti
 
+![Paging Translation](./pictures/paging_translation.png)
+
+### Page table – 1-level
+- pro každý page tam je záznam, kde je namapován ve fyzické paměti
+  - může tam být, že page namapován není - potom exception a OS to bude řešit
 ### Page table – problems
 ##### Size
-- 1-level page table, 32-bit VA/PA, 4k pages/frames (12 bits) - může existovat $2^{20}$ str8nek
-  - Size of the page table entry?
-  - Size of the page table?
+- 1-level page table, 32-bit VA/PA (32 bit adresový prostor), 4k pages/frames (12 bits - velikost 4 kiB) - může 
+existovat $2^{20}$ stránek
+  - Size of the page table entry? 32 bitů - 32 bit PA, mohlo by to být 20 bitů, jelikož posledních 12 bitů budou nuly
+    - 20 bitů by to nebylo, je to špatné číslo, na konci byly flagy nebo tak něco
+    - velikost záleží na velikosti fyzického adresového prostoru - může se lišit od virtuálního
+  - Size of the page table? $2^{20} \times 32$, což je asi 4 MiB
 - Do we really need the whole VA?
 - Multilevel page tables
   - 1st level always in memory
@@ -753,22 +819,26 @@ a frame number
 - $20$ bitů je rozděleno na $10$ a $10$ bitů
 - PTAR je registr s fyzickou adresou stránkovací tabulky první úrovně (PT1 - 1024 záznamů)
 - v PT1 dostaneme fyzickou adresu stránkovací tabulky druhé úrovně, kde dostane opravdovou fyzickou adresu
+- výhoda je, že nemusí existovat všechny page tably druhé úrovně, pokud je to malý proces, prostě se neudělají
+  - vytváří se ondemand
 ### Example/Exercise
 - Having the following code
 executed on IA-32
 - 32bit addresses
 - 2-level paging, 4 KiB pages
-- sizeof(int) == 4
+- `sizeof(int) == 4`
 
-### Questions
-- How many (data) pages are read?
+![Code](./pictures/code.png)
+
+- How many (data) pages are read? 2 až 3 - čteme 8000 bytů, což je něco mezi jedním a 2 kiB
 - What is the minimal amount of
-page faults (optimistic scenario)
-- What is the maximal amount of
+page faults (optimistic scenario) 0
+- What is the maximal amount of nekonečno
 page faults (pessimistic scenario)
-- How many distinct pages may
-cause a page fault in the worst
-case?
+- How many distinct pages may cause a page fault in the worst case? 7, může se stát, že všechny tři page s daty hodí page fault
+k tomu se může stát, že 2 level page tably nebudou načtené v paměti (každá zabírá jeden page), a jelikož potřebuje 3 page
+na data, můžou chybět 2 tably, jelikož data musí být continuous za sebou, k tomu ještě se může stát, že v paměti není ani kód,
+ten bude max přes 2 page - je to víc než jedna instrukce
 - What if we copy the data?
 - What about the code?
 
@@ -776,142 +846,147 @@ case?
 
 ### Paging – address translation
 #### Steps for address translation
-- Take the page number from VA and keep offset (separately)
-- Check TLB for mapping
-- If exists, retrieve the frame number, otherwise continue
-- Go through the page table
-- Update A(ccessed) and D(irty) bits in page table/TLB
-- Assemble PA by concatenating the retrieved frame number and the original offset from VA
+1. Take the page number from VA and keep offset (separately)
+2. Check TLB for mapping
+   - If exists, retrieve the frame number, otherwise continue
+3. Go through the page table
+4. Update A(ccessed) and D(irty) bits in page table/TLB
+   - Accesed bit is set při každém překladu
+   - Dirty bit is set pokaždé co se do page na kterou tento záznam ukazuje něco zapíše (page se modifikuje)
+   - dělá to Hardware
+5. Assemble PA by concatenating the retrieved frame number and the original offset from VA
 #### Go through the page table
-- Divide page number into multiple PT
-indices
-- Index 1st level PT
-- If there is no mapping for 2nd level
-PT, raise page fault exception
-- Retrieve PA for 2nd level PT and
-continue
-- Go through all levels of PTs
-- If there is no mapping in any PT
-level, raise page fault exception
-- If all PT levels are mapped, retrieve
-frame number
-- Save retrieved mapping to TLB
+1. Divide page number into multiple PT indices
+2. Index 1st level PT
+3. If there is no mapping for 2nd level PT, raise page fault exception
+4. Retrieve PA for 2nd level PT and continue
+5. Go through all levels of PTs
+6. If there is no mapping in any PT level, raise page fault exception
+7. If all PT levels are mapped, retrieve frame number
+8. Save retrieved mapping to TLB
 
 ### Paging – page fault exception handling
-- An instruction raises the page fault
-exception
-- OS interrupt handler
-- Determine the cause of the fault
-- Unauthorized access
-- Out of allocated virtual space, store to R/O
-page, access to kernel memory, …
-- Valid address but not mapped
-- Create mapping
-- Find a free frame
-- Load content to the free frame
-- Construct/fill corresponding page tables
-- Return back from handler and retry
-the instruction
+- většinou page fault nastane protože se snažíme jít do page, kde valid bit je low
+1. An instruction raises the page fault exception
+2. OS interrupt handler - po hození exceptionu se pustí
+3. Determine the cause of the fault
+   1. Unauthorized access
+       - Out of allocated virtual space, store to R/O page, access to kernel memory, …
+       - zapisování do read only memory, zapisování do kódu
+       - pokud se stane tohle tak OS zabije proces předpokládám
+   2. Valid address but not mapped
+       - alokovaná paměť je lazily assigned
+       - page, která byla vyměněná je na disku
+       - pokud se stane tohle tak se pokračuje dále
+4. Create mapping - vzít data z perzistentní paměti nebo vytvořit prostor pro lazily assigned paměť
+   1. Find a free frame
+   2. Load content to the free frame
+   3. Construct/fill corresponding page tables
+5. Return back from handler and retry the instruction
 
 - Find a free frame
-- Either there is one unoccupied
-- Or find a victim (for swapping)
-- Page replacement algorithms
-- Save dirty victim frame
-- Remove mapping from TLB
+  - Either there is one unoccupied
+  - Or find a victim (for swapping)
+    - Page replacement algorithms
+    - Save dirty victim frame
+    - Remove mapping from TLB
 
 ### Page replacement algorithms
-- Cache-replacement algorithms
-- In any situation, when you need to find a victim from a limited space
-- Frames, TLB, cache, …
+- Cache-replacement algorithms (jde je takto používat)
+  - In any situation, when you need to find a victim from a limited space
+  - Frames, TLB, cache, …
 #### Optimal page algorithm
 - Replace the page that will not be used for the longest period of time
 - Lowest page-fault rate
 - Theoretical, we do not have an oracle for foretelling the future
 #### Clock
-- Frames organized in a circular manner
-- A clock hand points to the next frame to replace
+- ručička se pohybje při hledání framu na vyměnění
+- Frames organized in a circular manner - framy jsou uspořádané jako hodiny
+- A clock hand points to the next frame to replace - pohybuje se mezi framama ručička
 - Each page has A(cessed) bit
-- A is the accessed flag which is set to 1 whenever the
-page is touched (by HW)
-- If the frame has A != 0, set A = 0 and
-advance the hand
+  - A is the accessed flag which is set to 1 whenever the page is touched (by HW)
+- If the frame has A != 0, set A = 0 and advance the hand
+  - ručička někde začne a všem framům co mají Accesed bit set ho nastaví na nulu, ve chvíli, kdy narazí na první frame s
+  Accesed bit low, tak ho vybere na vyměnění
 - If the frame has A == 0, select this frame
+
 #### NRU (Not Recently Used)
 - Each page has A(ccessed) and D(irty) bits
 - Clears A bits periodically (e.g., once a minute)
 - Bit D is not touched
 - Uses A and D bits to classify frames into four classes
-- Selects a random frame from the lowest non-empty class
+- Selects a random frame from the lowest non-empty class (používá A a D bity aby z nich udělal číslo, nejnižší class jsou 2 nuly)
+non empty znamená, že existuje alespoň jeden frame této třídy
+
+![NRU Classes](./pictures/NRU_classes.png)
 
 #### LRU (Least Recently Used)
 - Uses the recent past as a prediction of the near future
 - Replaces the page that has not been referenced for the longest time
+  - vždy když použije page, dá jí na vrchol této datové struktury, takže na spodu jsou page, které byly nejméně používané 
+  poslední dobou - ty jsou vybrané
 - Existing HW implementations
-- Cache
-- Bit matrix
+  - Cache
+  - Bit matrix
 - SW implementation
-- Move-to-front algorithm
-- Can be implemented by linked list or heap data structure
-- Too complicated and space consuming
-- Approximation algorithms exist
+  - Move-to-front algorithm
+    - Can be implemented by linked list or heap data structure
+  - Too complicated and space consuming
+  - Approximation algorithms exist
 
 #### NFU (Not Frequently Use)
 - Rough approximation of LRU
 - Each frame has a counter (typically small, several bits)
 - Periodically scan page table and increase the counter for a frames with A==1
-- Always clear A
+  - Always clear A - na konci tohoto průchodu mají všechny page A = 0
 - Select the frame with lowest counter
 - Problems
-- Newly occupied frames may be swapped before they get used
-- Frames that were previously heavy used will never be selected
+  - Newly occupied frames may be swapped before they get used
+  - Frames that were previously heavy used will never be selected
 - Aging
-- Periodically divide counters by 2 (i.e., shift by 1)
+  - Periodically divide counters by 2 (i.e., shift by 1)
+  - řeší často používané page v minulosti
 
 
 ### Advanced paging
 - Shared memory
-- Part of a virtual memory space shared amongst processes
-- The block is probably placed on different starting virtual address
+  - Part of a virtual memory space shared amongst processes
+    - The block is probably placed on different starting virtual address
 - Memory-mapped files
-- File as a backing store for paging
-- Direct access to the file content using CPU instructions
-- Problems with file size and with appending data
+  - File as a backing store for paging
+  - Direct access to the file content using CPU instructions
+  - Problems with file size and with appending data
 
 ## Virtual machine and containers
 - VM = Emulation of a computer system
-- Full virtualization
-- Substitute for a real machine, allows execution of entire OS
-- Hypervisor shares real HW, native execution, virtual HW
-- Isolation, encapsulation, compatibility
-- Process VM
-- Runs as an application inside OS
-- Provides platform-independent programming environment
-- Abstract machine (instructions, memory, registers, …)
-- Java VM, .NET CLR
-- Slow execution
-- JIT, AOT
+  - Full virtualization
+    - Substitute for a real machine, allows execution of entire OS
+    - Hypervisor shares real HW, native execution, virtual HW
+    - Isolation, encapsulation, compatibility
+  - Process VM
+    - Runs as an application inside OS
+    - Provides platform-independent programming environment
+      - Abstract machine (instructions, memory, registers, …)
+      - Java VM, .NET CLR
+    - Slow execution
+      - JIT, AOT
 - Container = OS-level virtualization
-- OS kernel allows existence of multiple isolated user space instances
+  - OS kernel allows existence of multiple isolated user space instances
 ### Physical machine
 - Physical HW
-- CPU, RAM, disks, I/O
-- Underutilized HW
+  - CPU, RAM, disks, I/O
+  - Underutilized HW
 - SW
-- Single active OS
-- OS controls HW
+  - Single active OS
+  - OS controls HW
 ### Virtual machine
 - HW-level abstraction
-- Virtual HW: CPU, RAM, disks, I/O
+  - Virtual HW: CPU, RAM, disks, I/O
 - Virtualization SW
-- Decouples HW and OS
-- Multiplexes physical HW across
-multiple guest VMs
-- Strong isolation between VMs
-- Manages physical resources,
-improves utilization
-- Encapsulation – VM represented
-as a set of files, can be easily
-distributed
+  - Decouples HW and OS
+  - Multiplexes physical HW across multiple guest VMs
+  - Strong isolation between VMs
+  - Manages physical resources, improves utilization
+  - Encapsulation – VM represented as a set of files, can be easily distributed
 
 

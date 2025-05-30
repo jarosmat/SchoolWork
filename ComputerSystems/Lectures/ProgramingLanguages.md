@@ -1,6 +1,7 @@
 # Programovací jazyky
 - naivní pohled na compiler je program, který dostane source code a vyplyvne kód, který jede na našem operačním systému a CPU
 - překladač je vlastně zobrazení ze vstupního jazyka do výstupního jazyka
+
 ## Gramatika - naivní představa
 - jazyk se skládá z:
   - pravidel, pravidla pro uzávorkování, jmen 
@@ -54,7 +55,9 @@
 - při kompilaci souboru se zkompiluje soubor - dostaneme object od kompilátoru
   - linker dostane object zkompilovaného souboru a soubor staticky linkované knihovny (.lib, .a) a zlinkuje je dohromady
   do konečného executable souboru
-![Static Linking](./pictures/static_linking.png)
+
+  - ![Static Linking](./pictures/static_linking.png)
+
 ### Dynamické linkování
 - knihovna se zkompiluje a zlinkuje, liker nám dá .dll soubor
 - kompilovaný soubor dostane header s interfacem, který provádí knihovna v .dll
@@ -148,6 +151,7 @@ fuknce spolu,
   - public name mangling
 
 ![Activation Record](./pictures/activation_record.png)
+
 ### Public name mangling
 - ve volací konvenci je někdy nastaveno, že se mají kódovat názvy kunkcí, pro linkování, užívá se to při method overloading, je to trochu bordel
 - je to kvůli method overloadingu, namespacům, metodám v třídách
@@ -168,6 +172,7 @@ fuknce spolu,
 - kdo uklízí parametry (volaná nebo volající), to co daná metoda vytvoří to musí uklidit
 
 ![Responsibilities](./pictures/creating_destroying_activation_record.png)
+
 ### Parametr passing
 - call by value
   - parametr je spočítán a value je poslaná přes stack (nejde takto ovlivnic nic mimo funkci, po ukončení funkce tato hodnota zanikne)

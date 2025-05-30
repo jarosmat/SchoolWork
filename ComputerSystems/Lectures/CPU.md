@@ -82,15 +82,19 @@ instrukcích se nemohou objevit jako operandy adresy v paměti)
 - např x86 (stará a si celkem na hovno) nemá load operace, ale každá operace může pracovat s pamětí
 - load-execute architektury, těchto architekturách jsou operace pouze s registry, pro operace můsí být napřed načtené 
 hodnoty do registrů, určitými instrukcemi
+
 ## Store instruction
 - registr/immidiate hodnota do paměti
+
 ## Move instrukce
 - mezi registry
 - nepřesouvá data, ale kopíruje data z jednoho registru do druhého
 - v x86 je move mezi registrem a pamětí (těžce implementované hardwarove), náhrada za chybějící Load instrukce
+
 ## Aritmetické a logické instrukce
 - +, -, <<, >>, &, |, ^, ~
 - v novejsich CPU *, /, %
+
 ## Skoky
 - dělení:
   - uncoditional - jednoduché, jenom se změní hodnota v IP
@@ -99,9 +103,11 @@ hodnoty do registrů, určitými instrukcemi
   - direct - v instrukci je přímo adresa jako hodnota 
   - indirect - v instrukci je adresa do paměti, kde je uloženo kam se má skočit
   - relative - v instrukce je znaménkové číslo, při skoku se to číslo přičte k IP
+
 ## Call, return
 - Call volá funci, call musí být speciální instrukce, dělá se tam i něco navíc
 - return vrací IP do funkce ze které bylo voláno
+
 ### kód ve vyšším jazyce
 to co tu je není úplně dobré
 ` if (a < 3) b = 4; else c = a << 2; `\
@@ -113,6 +119,7 @@ else část:\
 `load r1, [a]` načte `a` do registru `r1`\
 `shl r1, 2` left shift `r1` o 2, v `r1` je hodnota a \
 `store [c], r1` uložit do paměti, kde je `c` o 2 shiftnutou hodnotu `a` (`a` se doopravdy nezměnila)
+
 # Registry
 mají více typů registrů
 - general(obecné registry, často používané jako úložiště mezihodnot výpočtů), integer, floating point
@@ -147,6 +154,7 @@ EAX např adresuje celý 32 bit registr, AX adresa 16 MSb, AH 8 bitů a AL 8 LSb
 - ESP - stack pointer - pro callování funkce
 
 u x86_64 stejné akorát doleva přidáno 32 bitů a celých 64 bitů je RAX plus 
+
 # CPU má dva režimy
 - uživatelský (neprivilogovaný) - nelze v tomto režimu provádět úplně vše
 - kernelový (privilegovaný) - v tomto režimu pracuje kernel operačního systému, v tomto režimu jsou dostupné systémové registry a navíc některé systémové registry
@@ -189,6 +197,7 @@ funkce musí být v registru stejná hodnota jako před voláním
   - R[rd] = R[rs] + signext(imm16) - 16 se roztáhne znaménkově
   - s immidiate hodnotou
 - obdobné pro odčítání
+
 #### Bitové operace
 - vždy to má formát  `instrukce cil, zdroj, zdroj`, immidiate hodnoty jsou 16 bitové
 - and, andi
@@ -199,11 +208,13 @@ funkce musí být v registru stejná hodnota jako před voláním
 - Shifty
   - sll, slr - logické shiftování (nezachovává znaménko, šoupne tam na začátek nulu) `instrukce cil, zdroj, shamt` (shamt říká o kolik bitů posunout)
   - sra - aritmetické shiftování (zachovává znaménko, dáva smysl jen doprava)
+
 #### Memory Access
 potřeba doplnit - není potřeba umět
 - li $rd, imm32
   - intrukce, která dá immidiate hodnotu délky 32 bitů do registru 
   - ve skutečnosti je přepsaná na více jiných instrukcí (takové instrukce nejsou možné, jelikož je pevná délka instrikce 32 bit)
+
 #### Jumps
 - `j addr`
   - PC = addr
@@ -214,6 +225,7 @@ potřeba doplnit - není potřeba umět
   - R[r31] = PC + 4
   - PC = addr
   - na návrat musíme dát `jr $r31`
+
 #### Conditional jumps
 - `beq $rs, $rt, addr`
 - `bne`

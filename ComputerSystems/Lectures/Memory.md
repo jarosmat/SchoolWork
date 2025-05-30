@@ -13,6 +13,7 @@
 - bity jsou uskupené do slov (slovo je úsek paměti určité velikosti), do paměti se přistupuje po slovech
 - dneska 8 bitová slova, (byte) (v RAMkách)
 - přístupné adresou, 32 nebo 64 bitové adresy
+
 ## Adress space
 - adresový prostor je pro CPU prostě array slov
 - byty se nepřekrývaj, ale jsou přímo za sebou, není mezi nima mezera
@@ -23,6 +24,7 @@
 - Timing 
   - CAS (tCL) - Column Acces Strobe - počet taktů co tvrá než paměť odpoví na vystavení adresy sloupce, důležitý parametr,
   toto se používá nejčastěji - když se přistupuje sekvenčné, tak se mění toto
+
 ## Memory alignment
 - CPU potřebujou, aby data v paměti byly uložené na adresa, která je dělitelná velikostí dat (daného datového typu)
   - musí to být zarovnaná jako absolutní adresu
@@ -51,6 +53,7 @@ padding takový, že zabírá část paměťi, která je násobek velikosti nejv
   - alokované at runtime
   - mají dedikovaný paměťový blok pro tyto alokace, musí být opět uvolněné (programátorem nebo garbage collector)
   - jsou alokované on Heap
+
 ## Memory allocation
 - Task
   - najít dostatečně velký kus paměti z velké části paměti (heap)
@@ -59,6 +62,7 @@ padding takový, že zabírá část paměťi, která je násobek velikosti nejv
     - různé strategie, alokátory
   - použij blok
   - uvolni blok
+
 ## Fragmentation
 - Internal
   - při alokaci paměti pro dynamicky alokovanou proměnnou se naalokuje více paměti než je potřeba (např pro strukturu)
@@ -66,6 +70,7 @@ padding takový, že zabírá část paměťi, která je násobek velikosti nejv
 (např násobek 16 (nejmenší alokovatelná věc je veliká 16B)), to může způsobit špatné využití paměti
 - External
   - když je uvolněná paměť rozdělená do malých bloků, mezi kterými je alokovaná paměť
+
 ## Dynamic memmory allocation
 - je potřeba souvislej úsek paměti potřebné velikosti
 - je potřeba udžovat co je využité
@@ -77,12 +82,15 @@ padding takový, že zabírá část paměťi, která je násobek velikosti nejv
 ### first fit
 Začíná se od začátku a hledá se první díra kam se požadovaná velikost vejde a upravím bitmapu nebo linked list
 - je rychlý a jednoduchý, ale může dělit velké paměťové bloky
+
 ### next fit
 - stejný jako first fit, ale začíná vždy tam, kde nakonec skončil, pokud dojede nakonec, tak začne od začátku
 - next fit a first fit můžou dát malá data do moc velké díry, takže se zaplní zbytečně velké místo kam by se mohlo dát něco velkého
+
 ### Best fit
 - začíná od začátku, najde nejmenší možnou mezeru
 - pomalý, vytváří malinké mezery, ale vynechává velké bloky paměti
+
 ### Worst fit
 - začne od začátku, najde největší možnou mezeru
 - rozděluje velké bloky
@@ -107,6 +115,7 @@ Začíná se od začátku a hledá se první díra kam se požadovaná velikost 
 - Struktura, která ty data udržuje
   - musí být struktura, která má rychlý přístup k datům
   - většinou limitovaná velikost
+
 ## Cache in CPU
 - překrývá dlouhý přístup k paměti
 - když se přistupuje k datům, napřed CPU zjistí jestli data náhodou nejsou v cahce
@@ -137,6 +146,7 @@ Začíná se od začátku a hledá se první díra kam se požadovaná velikost 
     - invalid - cache line má špatnou informaci a je potřeba získat správnou informaci z paměti nebo jiné cache
 
 Cache vždy čte a zapisuje do paměti po 64B, musí to tak stejně často být zarovnané v paměti
+
 ## Cache implementation
 ### Associative memory
 - hodně rychlá
@@ -146,9 +156,8 @@ Cache vždy čte a zapisuje do paměti po 64B, musí to tak stejně často být 
   - nebo ne
 - velmi drahá
 - plně asociativní nebo n-asociativní
+- Každý přístup do paměti jde přes cahce
 
-
-Každý přístup do paměti jde přes cahce
 # Multiprocesory
 - SMP - symetric multiprocessing - více procesorů na stejném system busu (stejném sdíleném), staré, nepoužívá se
 - NUMA - non-uniform memory access - více CPU, každý má vlastní paměťový řadič a procesory jsou spojené velmi rychlou sběrnicí

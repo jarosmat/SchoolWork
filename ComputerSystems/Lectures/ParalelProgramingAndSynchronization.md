@@ -97,6 +97,7 @@
     - Possibility to wait on a certain condition
   - Java/C#
     - Keyword `synchronized`/`lock`
+
 ## Deadlock
 - Deadlock
   - A state of a group of units of scheduling and resources, where every member of the group waits for an action, which 
@@ -113,7 +114,9 @@
   - Circular wait
     - There is a circle in a deadlock modelling graph
     - na obrázku
+
 ![Circular Wait](./pictures/deadlock_graph.png)
+
 ## Deadlock – example
 
 ## Classic synchronization problems
@@ -125,6 +128,7 @@
 - Dining philosophers
 - Readers and writers
 - Sleeping barber
+
 ### Producer-consumer
 - Problem
   - Producer produces a product and he places it to the warehouse with a limited capacity. If the warehouse is full, 
@@ -134,6 +138,7 @@
   - If the warehouse is full and consumer takes the first product and there is stopped producer, consumer will wake up producer
 - jaku u pipeline, jeden proces čeká na něco co je vytvářené jiným procesem a je tam buffer mezi nimi, který vyrovnává
 rychlost vyváření a přijímání
+
 ### Dining philosophers
 - Problem
   - N philosophers sitting around a circular table
@@ -147,6 +152,7 @@ rychlost vyváření a přijímání
 
 - může být rozšířeno tak, že pokud nemůžou získat chopstick nalevo, pustí ten napravo, což ale deadlock vyřešit nemusí
 - vyřešit tím, že se dá jedna slánka doprostřed stolu a každý si napřed musí osolit jídlo - mutex
+
 ### Readers and writers
 - Problem
   - Common data structure
@@ -159,6 +165,7 @@ rychlost vyváření a přijímání
   - A writer must wait if there are working readers
 - RW Lock - vytvoří pro tento problém
   - More difficult to make it fair/efficient
+
 ### Sleeping barber
 - Problem
   - Barbershop with one barber, one barber chair, and N waiting chairs

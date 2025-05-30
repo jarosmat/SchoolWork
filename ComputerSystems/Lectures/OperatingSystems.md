@@ -46,6 +46,7 @@ syscall # jumps to adress stored in IA32_LSTAR register and switch ro ring 0 (ke
 ...
 sysret # return and switch to ring 3
 ```
+
 ## OS Architectures
 ### Architecture - monolithic
 Monolithic systems - vše na stejné vrstvě a všechno může volat všechno
@@ -61,6 +62,7 @@ se tak nějaké funkce (service proc)
 - Efficient use of resources, efficient code
 - Originally no extensibility
   - Now able to load modules dynamically (flexible, but even more error-prone)
+
 ### Architectue - layered
 - evolution of monolithic system
   - Organized into hierarchy of layers
@@ -142,6 +144,7 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
 
 ### Example PIO disk handling
 - to co tam je napsané, postup zapisování do registrů je co dělá controller
+
 ### Device intercommunication
 - Polling
   - CPU actively checks device status change (like in previous example), dnes se nepoužívá, CPU se dívá do controleru nebo někam a zjišťuje jestli se dokončila operace
@@ -243,7 +246,6 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
     - File handles
     - Network sockets
     - Synchronization primitives
-
 - Thread
   - Position in code (program counter)
   - Own stack (rest is shared) - thready (jednoho procesu) mají sdílený adresový prostor, až na stack
@@ -349,6 +351,7 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - Minimize response time
     - Time to respond in interactive applications
   - Pro interaktivní aplikace (GUI) musí být zajištěno, aby byla co nejmenší odezva po uživatelské interakci, jinak tyto programy hrozně dlouho nic nedělají - to se nějak dělá v Kernelu
+
 ### Scheduling – priority
 - Priority
   - A number expressing the importance of the process
@@ -362,6 +365,7 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
       - Once in a time, the dynamic priority is increased for all READY units of scheduling
       - The dynamic priority is initialized to 0 and is reset to 0 after the unit of scheduling is scheduled for execution
   - Například systémové jednotky plánování mají velmi vysokou prioritu - aby něco dělali co nejčastěji
+
 ### Scheduling algorithms – non-preemptive
 - First Come, First Serve (FCFS)
   - Single FIFO queue
@@ -371,6 +375,7 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - Maximizes throughput
   - Expected job execution time must be known in advance
 - Longest Job First
+
 ### Scheduling algorithms – preemptive
 - Round Robin - někteří učitelé tomu říkají "kruhová sýkorka" nebo nějakej takovej bizár
   - Like FCFS (First come first serve) (but preemptive)
@@ -409,6 +414,7 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
     - If the process reaches its maximum execution time or is somehow stopped or interrupted, it is reinserted into the tree with a new time key
       - Actual time spent on the CPU is added to the virtual runtime
   - Virtual runtime decays over time
+
 ### Inter-Process Communication
 - Cooperating processes
   - OS isolates resources of each process (memory, device handlers, …)
@@ -436,6 +442,7 @@ přístupů k zařízení (uživatel to nevidí, o to se staraá kernel), takže
   - File name and path – a named reference to the file identifier in organized tree structure
     - So that humans can find the files
     - Some parts of the file name may have special meaning (leading dot, extension)
+
 ### File operations
 - `open` na soubor vrátí pouze číslo souboru vygenerované OS (není to opravdové číslo souboru - z bezpečnostních důvodů),
 číslování souborů pro proces je process unique, proces má tabulku otevřených souborů
@@ -469,6 +476,7 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
   jestly bylo čtení dokončeno, nemusí se proces blokovat při čtení a počítat něco jiného
 
 ### File attributes
+
 ### File directory
 - Directory
   - Collection (list) of file entries
@@ -483,9 +491,11 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
     - Create/delete/rename file/subdirectory
     - Search for a name - operace se provádí při `open` souboru, proto je open pomalé
     - List members
+
 #### File directory example
 - FAT directory entry
   - File name “The quick brown fox”
+
 ### File storage
 - Traditional storage
   - File system in secondary or external storage (persisted)
@@ -499,6 +509,7 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
 /dev/urandom
 /proc/cpuinfo
 ```
+
 ### File Links
 - Links (hard links)
   - Multiple directory entries refer to the same physical file (same file ID)
@@ -512,6 +523,7 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
   - Requires special handling in path processing (“follow symlinks”)
     - Often hidden in basic system tools or programming runtime libraries
   - soft link je odkaz na jiný záznam ve file systému
+
 ### FIle System
 - disk je rozloženej na partitions, každá může mít jiný file system
 - File system
@@ -527,12 +539,15 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
       - Bitmap, linked list, B-tree, …
     - File data management
       - Sequence of data blocks - pro každý soubor musí být v nějaké datové struktuře uloženo, v jakých blocích jsou data uložena
+
 #### Local File system
 - Stored on HDD, SSD, removable media
 - FAT, NTFS, ext234, XFS, …
+
 #### Network file system
 - Protocol for accessing files and directories over the network
 - NFS, CIFS/SMB, …
+
 ### FIles systems examples
 #### FAT 
 - File Allocation Table (FAT)
@@ -599,6 +614,7 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
   - Cluster – the same track on all platters
   - Flying height – distance between head and platter (~5 nm)
   - Rotational speed – 5400, 7200, 10k, 15k rpm
+
 ### Disk scheduling algorithms
 - What?
   - Scheduling of I/O requests for the disk
@@ -613,6 +629,7 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
   - All algorithms demonstrated with the same pattern of I/O requests and initial position
     - I/O requests - 82, 170, 43, 61, 24, 16, 190
     - Initial position - 50
+
 ### Disk scheduling algorithms examples
 #### FCFS (First Come First Served)
 - may be used under smalll loads
@@ -621,12 +638,14 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
   - Simple, good for light load
 - Cons
   - No optimization – usually not the best
+
 #### SSTF (Shortest Seek Time First)
 - Pros
   - Average access time decreases
   - Increased throughput
 - Cons
   - Possible starvation for distant requests, when new short seek requests arrive - pokud pořád přichází požadavky, které jsou velmi blízko, tak ty co jsou daleko budou čekat dlouho
+
 #### SCAN (a.k.a. Elevator algorithm)
 - Keeps direction (as long as request exists) - jede v jednom směru a dokud jsou v tom směru požadavky, tak se bude tím směrem pohybovat, když v tom směru nic nového není, tak se začne pohybovat druhým směrem a sbírá požadavky v tomto směru
 - Pros
@@ -634,14 +653,17 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
   - Low variance in access time
 - Cons
   - Long waiting times for new requests just visited by the arm
+
 #### CSCAN
 - Circular SCAN
 - jako SCAN, akorát sbírá pouze požadavky v jednom směru pohybu, když se dostane na konec, tak se vrátí na začátek (při návratu nesbírá požadavky) a začne sbírat požadavky ve stejném směru jako předtím
   - jednodušší jak SCAN, jelikož si nemusí pomatovat směr
 - Pros
   - More uniform time compared to SCAN
+
 #### LOOK/CLOOK
 - Like SCAN/CSCAN but does not visit ends of the disk
+
 #### FSCAN
 - Two queues
 - Compute algorithm only for 1st queue, new requests are inserted to the 2nd one
@@ -659,6 +681,7 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
     - Read/write per page, erase per block (!)
   - Complex controller that handles the I/O operations
     - And data caching in internal RAM
+
 #### SSD data updates
 - Writing new data is OK
 - Page update cannot erase only one page
@@ -667,6 +690,7 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
 - Garbage collection preforms data consolidation
   - Copy only valid pages of a block
   - Erase entire block
+
 #### SSD issues
 - Write amplification problem
 - A page is re-written many times due to garbage collection
@@ -678,6 +702,7 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
 - Special file systems designed for SSDs
 - Flash-friendly FS (F2FS), BtrFS, log-structure file systems (e.g., LFS)
 - TRIM operation – special command how OS can render blocks invalid (file is deleted)
+
 ### File system(s) on HDD(s)
 - HDD Partitioning
   - Division of physical drive into multiple logical drives (MBR, GPT)
@@ -690,6 +715,7 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
     - RAID 0 – two disks, per-sector interleaving (better speed, worst reliability)
     - RAID 1 – two disks completely mirrored
     - RAID 5 – each data block is divided among N disks + 1 checksum is created - kapacita je o jeden disk menší než kolik je tam fyzických disků, disk navíc se stará o získání dat při selhání disku navíc
+
 ### Virtual Memory
 - Basic concepts
   - All memory accesses from instructions work with a virtual address - všechny load story a všechen přístup do paměti je přes virtuální adresy
@@ -702,7 +728,7 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
   - Translation mechanism
     - Implemented in HW (MMU (Memory managment unit) embedded in CPU)
       - MMU překládá viruální adresy na fyzické adresy (překlad dělá hardware))
-        - s fyzickými adresami se pouze komunikuje s pamětí
+        - s fyzickými adresami se pouze komunikuje s pamětí (komunikace s cahce je ve fyzických adresách - adresování do asociativní paměi)
     - Translates a virtual address to a physical address
     - The translation (mapping) may not exist -> exception (fault)
       - překlad nemusí existovat, pokud MMU při překladu zjistí, že překlad neexistuje, MMU vyvolá výjímku
@@ -715,6 +741,7 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
 - PAS - physical adress space
 - aplikaci si myslí, že mají celý adresový prostor pro sebe, ale to je akorát schované za virtuální pamětí
   - adresové prostory všech aplikací jsou oddělené
+
 #### Why Virtual Memory
 - More address space
   - VAS can be larger than PAS (an illusion of having large memory)
@@ -730,6 +757,7 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
 - Specialized (advanced) operations
   - Memory-mapped I/O (e.g., memory-mapped file)
   - Controlled memory sharing
+
 ### Segmentation
 - Concepts
   - Virtual (process) address space divided into logical segments
@@ -756,6 +784,7 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
     - lze odstranit segment z paměti a dát ho do paměti, pokud by změněnej musí být zapsán na disk celý
       - do segmentační tabulky musí být napsáno, že daný segment je v paměti
 - Segmentace je nevýhodná, protože při každém přístupu do paměti, se musí provést jedno sčítání a jedno porovnání
+
 ### Paging
 - Concepts
   - VAS divided into equal parts
@@ -792,8 +821,9 @@ případně uvolní soubor pro další procesy, pokud byl soubor otevřenej pro 
 ### Page table – 1-level
 - pro každý page tam je záznam, kde je namapován ve fyzické paměti
   - může tam být, že page namapován není - potom exception a OS to bude řešit
+
 ### Page table – problems
-##### Size
+#### Size
 - 1-level page table, 32-bit VA/PA (32 bit adresový prostor), 4k pages/frames (12 bits - velikost 4 kiB) - může 
 existovat $2^{20}$ stránek
   - Size of the page table entry? 32 bitů - 32 bit PA, mohlo by to být 20 bitů, jelikož posledních 12 bitů budou nuly
@@ -804,7 +834,8 @@ existovat $2^{20}$ stránek
 - Multilevel page tables
   - 1st level always in memory
   - Individual tables on other levels may be missing (i.e., we are saving space)
-##### Speed
+
+#### Speed
 - Each memory access from an
 instruction means at least one
 other memory access to the page
@@ -814,6 +845,7 @@ table
 - Cache for translating page number to
 a frame number
 - 0-level page tables (MIPS)
+
 ### Page table – 2-level
 - VA je rozdělené na $20$ a $12$ bitů jak má být
 - $20$ bitů je rozděleno na $10$ a $10$ bitů
@@ -821,6 +853,7 @@ a frame number
 - v PT1 dostaneme fyzickou adresu stránkovací tabulky druhé úrovně, kde dostane opravdovou fyzickou adresu
 - výhoda je, že nemusí existovat všechny page tably druhé úrovně, pokud je to malý proces, prostě se neudělají
   - vytváří se ondemand
+
 ### Example/Exercise
 - Having the following code
 executed on IA-32
@@ -855,6 +888,7 @@ ten bude max přes 2 page - je to víc než jedna instrukce
    - Dirty bit is set pokaždé co se do page na kterou tento záznam ukazuje něco zapíše (page se modifikuje)
    - dělá to Hardware
 5. Assemble PA by concatenating the retrieved frame number and the original offset from VA
+
 #### Go through the page table
 1. Divide page number into multiple PT indices
 2. Index 1st level PT
@@ -895,10 +929,12 @@ ten bude max přes 2 page - je to víc než jedna instrukce
 - Cache-replacement algorithms (jde je takto používat)
   - In any situation, when you need to find a victim from a limited space
   - Frames, TLB, cache, …
+
 #### Optimal page algorithm
 - Replace the page that will not be used for the longest period of time
 - Lowest page-fault rate
 - Theoretical, we do not have an oracle for foretelling the future
+
 #### Clock
 - ručička se pohybje při hledání framu na vyměnění
 - Frames organized in a circular manner - framy jsou uspořádané jako hodiny
@@ -972,6 +1008,7 @@ non empty znamená, že existuje alespoň jeden frame této třídy
       - JIT, AOT
 - Container = OS-level virtualization
   - OS kernel allows existence of multiple isolated user space instances
+
 ### Physical machine
 - Physical HW
   - CPU, RAM, disks, I/O
@@ -979,6 +1016,7 @@ non empty znamená, že existuje alespoň jeden frame této třídy
 - SW
   - Single active OS
   - OS controls HW
+
 ### Virtual machine
 - HW-level abstraction
   - Virtual HW: CPU, RAM, disks, I/O

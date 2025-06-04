@@ -11,6 +11,8 @@
   - confidential protocols prevent anybody but intended recipient from reading the message 
 - integrity - the message won't be changed
   - protocols providing integrity ensure that when the message is modified it will fail and recipients will be able to tell
+- NONCE - number used once
+  - value that will be used only once by the same protocol
 
 ## Cryptography primitives
 - symmetric cipher
@@ -68,5 +70,54 @@ signing fails
 - encrypt symmetric key with asymmetric encryption key of the recipient
 - needs strong asymmetric, symmetric ciphers and strong random number generator
 
-55
+## Auction Protocol
+- Alice at home, watching auction broadcast
+- Bob at auction bidding on Alice's behalf
+- two messages
+  - increase bid by certain amount of dollars
+  - stop bidding
 
+### Version 1
+- symmetric cipher
+- in person they generate random secret
+- text messages
+  - add n
+  - stop
+
+#### Problems
+- the size of encrypted message can reveal the message - symmetric cipher does not change length
+  - solution: add padding to the end of messages to make the messages fixed size
+- if Alice sends same message twice (f.e. add 1000) attacker will be able to decipher the message
+  - add a nonce to a start of the message
+- attacker can send the message again
+  - add a sequence number to message
+    - just a counter, that is incremented before sending next message
+    - Bob will set his counter to a number in a message he just received every time he receives a message with counter
+    higher that current value and then compare it to all incoming messages, if counter of incoming message is lower 
+    that current counter Bob discards the message
+- attacker modifying the encrypted message
+  - if the encrypted message is changed, the decrypted message will be probably some garbage
+    - Bob can check every incoming message if it has right format if not discard it
+- many real world symmetric ciphers propagate bit flips - one bit flipped in encrypted message result in that bit being
+flipped in decrypted message, otherwise the message stays the same
+  - attacker can change the sequence numbers to anything - even all ones, then all next messages will ignored, change
+  the amount of next bid (if attacker guesses the format of message)
+  - solution - add hash of original message (hash wont be encrypted)
+- this protocol cant be used more that one time - attacker could just record all mesegas at one auction and replay them
+at the next one
+  - solutions
+    - add session id to the message
+      - f.e. timestamp of start of auction
+    - use different key for each auction
+
+## Cryptographic Attacks
+- ciphertext only attack
+  - attacker has collection of encrypted messages and he tries to decrypt the messages
+- known plaintext
+  - attacker has one encrypted messages together with the content of that message and tries to get the key
+- chosen plaintext
+  - attacker injects his plaintext into protocol and tries the defender to send the encrypted chosen plaintext
+
+## Security level
+- measured in number ($l$)
+- security level $l$ means that for breaking the protocol the attacker needs $2^l$ operations

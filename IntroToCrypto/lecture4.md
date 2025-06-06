@@ -93,9 +93,9 @@ bitflips are done on n-1 th block)
 - block ciphers mode and all encryption based on block have inforamtion leaks, f. e. ECB leaks equal identical blocks
 
 #### CBC leak
-- two cipher text blocks ($Y_i,Y_j$) are equal
-$Y_i = E_k(X_i \text{^} Y_{i-1}) = E_k(X_j \text{^} Y_{j-1}) = Y_j$
-$ X_i \text{^} Y_{i-1} = X_j \text{^} Y_{j-1} $
+- two cipher text blocks ($Y_i,Y_j$) are equal\
+$Y_i = E_k(X_i \text{^} Y_{i-1}) = E_k(X_j \text{^} Y_{j-1}) = Y_j$\
+$ X_i \text{^} Y_{i-1} = X_j \text{^} Y_{j-1} $\
 $ X_i \text{^} X_j = Y_{i-1} \text{^} Y_{j-1}$
 - leaks amount of information that is equal to lenght of block if two cipher text collision happend
   - on average this information is leaked every $2^{\frac{lenght\ of\ block}{2}}$
@@ -103,9 +103,9 @@ $ X_i \text{^} X_j = Y_{i-1} \text{^} Y_{j-1}$
 
 #### Leaks for CTR
 - no two values that are used to xor plain text  blocks ($C_i, C_j$) are equal (different values are set as input tothe same encryption function)
-- two cipher text blocks ($Y_i, Y_j$)
-$Y_i \text{^} Y_j = (X_i \text{^} C_i) \text{^} (X_j \text{^} C_j)$
-$Y_i \text{^} Y_j = (X_i \text{^} X_j) \text{^} (C_i \text{^} C_j)$
+- two cipher text blocks ($Y_i, Y_j$)\
+$Y_i \text{^} Y_j = (X_i \text{^} C_i) \text{^} (X_j \text{^} C_j)$\
+$Y_i \text{^} Y_j = (X_i \text{^} X_j) \text{^} (C_i \text{^} C_j)$\
 $\Rightarrow X_i \text{^} X_j \neq Y_i \text{^} Y_j$
 
 - how much does this leak: b is the amout of bits - information in block
@@ -119,6 +119,8 @@ $\Rightarrow X_i \text{^} X_j \neq Y_i \text{^} Y_j$
 ## Cyphertext stealing
 - trick to avoid padding in block ciphers (replacment for padding)
 - work only if message has at least one full block
+
+![Ciphertext stealing](./pictures/ciphertext_stealing.png)
 
 ### Cyphertext stealing for ECB
 1. all blocks apart from last two ($X_{n-1}, X_n$) are encrypted as usual (size of unused part of last block is $t$)

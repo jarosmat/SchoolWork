@@ -22,9 +22,9 @@
     - every block is encrypted independently on others
     - can be parallelized
     - two identical messages are encrypted the same
-    - if there are two same blocks in message, then both blocks have the same cipher text block
-    - changing one bit in a block propagates only in one block
-    - its not good, should not be used
+    - if there are two similar blocks in a message, then both blocks have the same cipher text block
+    - changing one bit in a block is propagated only in one block
+    - it's not good, should not be used
 
 ![ECB](./pictures/ECB.png)
 
@@ -32,8 +32,8 @@
   - before encrypting block using encryption function, block is xored with cipher text block of previous block, first
   block is xored with unique random IV
   - CPA secure - is secure against chosen plain text attacks
-    - but can leak some info, especially when message is long
-  - flipping a bit in cipher text results in destruction of corresponding plain text and flip one bit in next plain text 
+    - but can leak some info, especially when a message is long
+  - flipping one bit in cipher text results in destruction of the corresponding plain text block and flip one bit in the next plain text 
   block (this plain text block will be xored with cipher text block with flipped bit as last step of decryption)
   - swapping two cipher blocks destroys four blocks - block that are swapped and blocks that are decrypted using swapped blocks
  

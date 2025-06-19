@@ -30,7 +30,7 @@
     - oracle is $E_K$ with random key K or uniformly random permutation
   - goal of verifier is to tell whether the oracle is perfectly random permutation or block cipher with random key
   - cipher is secure when there is no good verifier which proves that the function is not random enough
-    - there is no verifier with probability of success $\geq \frac{1}{3}$ and run time $<2^{security\ level} $ 
+    - there is no verifier with probability of success $\geq \frac{2}{3}$ and run time $<2^{security\ level} $ 
 
 ## Iterated cipher
 - multiple round of ciphers
@@ -60,7 +60,7 @@
 - Feistel function
   - gets the right half and round key and generates something
 - product of feistel function is xored with left part
-  - right part is not modified and left part is modified according with product of feistel function
+  - right part is not modified and left part is modified by xoring it with product of feistel function
 - round ends with swapping left and right part so that in next round the right part of this round gets modified
 
 ## DES - digital encryption standart
@@ -98,7 +98,7 @@
   - encrypting complement of message with complement of key the cipher text is complement of cipher text produced when encrypting text with key
 - Key size is too small
   - there was even a company providing DES cracking when give text and cipher text 
-- Block size is too small - $2^32$ possible blocks - block collision can be possible
+- Block size is too small - $2^{32}$ possible blocks - block collision can be possible
 
 ### Attacks on DES
 - best attack is in $2^{43}$ pairs - cipher text and plain text
@@ -127,7 +127,7 @@
 - 4 steps
 1. Byte Sub (S-box), every element in matrix is ran through S-box
 2. ShiftRow - every row in matrix (block) is shifted by certain number of bytes
-3. MixColumn - every row (vector in $GF(2^8)$) is ran through invertible linear transformation
+3. MixColumn - every column (vector in $GF(2^8)$) is ran through invertible linear transformation
 4. AddRoundKey - xor current matrix with round key matrix
 
 - MixColumn is not in last round
@@ -146,7 +146,7 @@ look just like encryption with inverted sboxes and linear transformation
 - byte aligned - all operations are in bytes - faster software implementation, but diffusion is more regulated than it could be
 - 128 bit keys are probably too small against quantum computing
 - 128 bit blocks are too small - colision danger
-  - solution is changing keys after something like $2^32$ blocks
+  - solution is changing keys after something like $2^{32}$ blocks
 
 - there is no known practical attack on AES apart from implementation atacks
 

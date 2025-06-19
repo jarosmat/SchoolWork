@@ -53,7 +53,7 @@
   - simmilar to CTR, but it first encrypts IV and then encrypts encrypted IV
   - blocks cannot be decrypted and encrypted independently
 
-![Output FeedBack](./pictures/Output_FeedBack.png)
+![Output FeedBack](./pictures/Output_Feedback.png)
 
 ## Attacking block cipher
 ### Attacking Padding
@@ -111,7 +111,7 @@ $\Rightarrow X_i \text{^} X_j \neq Y_i \text{^} Y_j$
 - how much does this leak: b is the amout of bits - information in block
   - leaked info is equal to: $b - \log (2^b - 1)$, its because one possible value of block is excluded
   $b - \log (2^b - 1) = \log (\frac{2^b}{2^b - 1}) = \log (1 + \frac{1}{2^b - 1}) \approx \frac{1}{2^b - 1} \approx \frac{1}{2^b} = 2^{-b}$
-    - first approximation of logaritm: for small $\epsilon$: $\log(1+ϵ) ≈ ϵ
+    - first approximation of logaritm: for small $\epsilon$: $\log(1+ϵ) ≈ ϵ$
   - over all pairs in message is less than equal $\binom{n}{2} × 2^{-b} ≈ m^2 × 2^{-b} $, $ m ≈ \sqrt{2^b} $
     - once the number of block reaches $\sqrt{2^b}$ the amount leaked approches one bit
       - all messages should be shorter than $\sqrt{2^b}$ blocks
@@ -145,7 +145,7 @@ is adding to left of register), bits that are xored are called taps
 - LFSRs tend to bee good pseudo generators with
   - if position of taps satisfy some things and initial state is nonzero, then period in $2^{n-1}$
   - not great cryptographic pseudo generators
-    - by looking at output we can get initial output (if we know size of register and look at it from begining) and then
+    - by looking at output we can get initial input (if we know size of register and look at it from begining) and then
     through some linear equations taps can be derived
 
 ## Trivium cipher

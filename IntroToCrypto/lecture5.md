@@ -75,7 +75,4 @@ at some point, then just go backwards and at some point they will go in other di
 
 no idea what he is talking about
 
-### COmpresion function
-
-
-
+### Compresion function

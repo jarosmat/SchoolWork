@@ -15,4 +15,4 @@ $\mathbb{P} = \{p_1, p_2, ..., p_n \}$, kde $p_i = 1$ pokud vrchol $i$ je v jád
 
 ## Teorie
 $ T = \left\{ \neg(p_i \land p_j) \sim (\neg p_i \lor \neg p_j)  | (i,j) \in A \right\} \cup 
-\left\{ p_i \lor \bigvee_{l : (l,i) \in A} p_l \right\} $
+\left\{ p_i \lor \bigvee_{l : (l,i) \in A} p_l | i \in V\right\} $

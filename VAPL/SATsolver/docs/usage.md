@@ -1,7 +1,7 @@
 # Použití
 
 ```
-kernel.py [-h] [-i INPUT] [-o OUTPUT]
+kernel.py [-h] [-i INPUT] [-f FORMULA_OUTPUT]
 ```
 ## Vstup
 

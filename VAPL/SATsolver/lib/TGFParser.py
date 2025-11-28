@@ -34,7 +34,7 @@ class TGFParser:
 				sys.stderr.write("Error: Invalid edge definition: node does not exist" + line + "\n")
 				sys.exit(1)
 
-			self.edges[node1].append(node2)
+			self.edges[node2].append(node1)
 			self.edgeTuples.append((node1, node2))
 
 	def ParseFile(self):

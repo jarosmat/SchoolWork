@@ -35,3 +35,4 @@ class CNFEncoder:
 				file.write(f'0\n')
 
 
+		return nodeEncoding

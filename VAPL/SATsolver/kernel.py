@@ -1,6 +1,10 @@
 from lib.CNFEncoder import CNFEncoder
 from lib.TGFParser import TGFParser
 from argparse import ArgumentParser
+import subprocess
+
+def print_result(var_encoding, result):
+	pass
 
 def main():
 	parser = ArgumentParser()
@@ -22,6 +26,16 @@ def main():
 			"Output file for the DIMACS format (i.e. the CNF formula)."
 		),
 	)
+	parser.add_argument(
+		"-s",
+		"--solver",
+		default="glucose-syrup",
+		type=str,
+		help=(
+			"Specify which SAT solver to use. "
+		),
+	)
+
 	args = parser.parse_args()
 	print("args parsed")
 	parser = TGFParser(args.input)
@@ -36,6 +50,7 @@ def main():
 
 	print(encoding)
 
+	print(subprocess.run([args.solver, '-model', '-verb=', args.formula_output], stdout=subprocess.PIPE))
 
-
-main()
+if __name__ == "__main__":
+	main()

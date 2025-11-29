@@ -4,14 +4,14 @@ import sys
 class TGFParser:
 	def __init__(self, filename):
 		self.filename = filename
-		self.nodeEnd = '#'
+		self.nodeEnd = "#"
 		self.nodes = set()
 		self.edges = dict()
 		self.edgeTuples = []
 
 	def ParseNodes(self, file):
 		line = file.readline()
-		while line != self.nodeEnd:
+		while line.strip() != self.nodeEnd:
 			lineParts = line.split()
 			if len(lineParts) != 0:
 				node = lineParts[0]
@@ -36,6 +36,8 @@ class TGFParser:
 
 			self.edges[node2].append(node1)
 			self.edgeTuples.append((node1, node2))
+
+			line = file.readline()
 
 	def ParseFile(self):
 		with open(self.filename) as file:

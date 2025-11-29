@@ -8,8 +8,10 @@ class CNFEncoder:
 	def encode(self):
 		i = 1
 		nodeEncoding = dict()
+		reverseEncoding = dict()
 		for node in self.nodes:
 			nodeEncoding[node] = i
+			reverseEncoding[i] = node
 			i += 1
 
 		with open(self.outputFile, "w") as file:
@@ -35,4 +37,4 @@ class CNFEncoder:
 				file.write(f'0\n')
 
 
-		return nodeEncoding
+		return reverseEncoding

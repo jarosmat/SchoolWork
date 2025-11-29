@@ -4,7 +4,24 @@ from argparse import ArgumentParser
 import subprocess
 
 def print_result(var_encoding, result):
-	pass
+	for line in result.stdout.decode('utf-8').split('\n'):
+		print(line)
+		if line.startswith('v'):
+			res = line.split()
+
+	code = result.returncode
+	if code == 20:
+		print("Specified graph does not possess a kernel")
+		return
+
+	print("Vertices in graph kernel", end=": ")
+	for var in res:
+		if var != 'v' and var != '0':
+			if int(var) > 0:
+				vertex = (var_encoding[int(var)])
+				print(f'{var_encoding[int(var)]}, ', end="")
+
+	print()
 
 def main():
 	parser = ArgumentParser()
@@ -50,7 +67,9 @@ def main():
 
 	print(encoding)
 
-	print(subprocess.run([args.solver, '-model', '-verb=', args.formula_output], stdout=subprocess.PIPE))
+	res = subprocess.run([args.solver, '-model', '-verb=', args.formula_output], stdout=subprocess.PIPE)
+
+	print_result(encoding, res)
 
 if __name__ == "__main__":
 	main()

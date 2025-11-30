@@ -46,7 +46,7 @@ def main():
 	parser.add_argument(
 		"-s",
 		"--solver",
-		default="glucose-syrup",
+		default="./lib/glucose-syrup",
 		type=str,
 		help=(
 			"Specify which SAT solver to use. "
@@ -54,7 +54,6 @@ def main():
 	)
 
 	args = parser.parse_args()
-	print("args parsed")
 	parser = TGFParser(args.input)
 
 	parser.ParseFile()
@@ -65,9 +64,7 @@ def main():
 	encoding = encoder.encode()
 	print("CNF file encoded")
 
-	print(encoding)
-
-	res = subprocess.run([args.solver, '-model', '-verb=', args.formula_output], stdout=subprocess.PIPE)
+	res = subprocess.run([f'./{args.solver}', '-model', '-verb=', args.formula_output], stdout=subprocess.PIPE)
 
 	print_result(encoding, res)
 

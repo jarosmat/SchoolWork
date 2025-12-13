@@ -93,7 +93,7 @@
 ]
 
 #proposition[
- Kód s minimální vzdálenstí $d$ je schopen opravit maximálně $floor((d-1)-2)$ chyb 
+ Kód s minimální vzdálenstí $d$ je schopen opravit maximálně $floor((d-1)/2)$ chyb 
 ]
 #proof[
   víme, že $d$ je min vzdálenost mezi nějakými prvky, búno mezi $x,y$, pokud bychom posílali $x$ a udělali $floor(d/2)$ chyb, tak už nevíme kterým směrem se při opravě vydat, jestli k $x$ nebo k $y$
